@@ -7,13 +7,31 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/mainLayout"
+        android:layout_width="729dp"
+        android:layout_height="407dp"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp"
+        tools:ignore="MissingConstraints">
 
+        <Button
+            android:id="@+id/buttonGallerie"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gallerie" />
+
+        <Button
+            android:id="@+id/buttonControle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contrôle" />
+
+        <Button
+            android:id="@+id/buttonDonnees"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Données" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

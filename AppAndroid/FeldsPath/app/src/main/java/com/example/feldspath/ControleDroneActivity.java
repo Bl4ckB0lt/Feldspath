@@ -12,11 +12,23 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
 public class ControleDroneActivity extends AppCompatActivity {
     ImageButton BTNAvancer;
     ImageButton BTNReculer;
     ImageButton BTNTournerG;
     ImageButton BTNTournerD;
+
+    private MqttClient mqttClient;
+    private static final String BROKER_URL = "tcp://broker.emqx.io:1883";
+    private static final String CLIENT_ID = "AndroidDroneController";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +45,17 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNTournerG = findViewById(R.id.BTNTournerG);
         BTNTournerD = findViewById(R.id.BTNTournerD);
 
+        // Initialize MQTT Client
+        initializeMQTT();
+
         BTNAvancer.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN)
-                    Log.d("BTNAvancer", "onTouch: Appuyé");
-                else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d("BTNAvancer", "onTouch: Laché");
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    publishMessage("Feldspath/controle", "avancer");
+                    Log.d("controleur", "avancer");
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    publishMessage("Feldspath/controle", "arreter");
                 }
                 return false;
             }
@@ -47,10 +63,10 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNReculer.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN)
-                    Log.d("BTNReculer", "onTouch: Appuyé");
-                else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d("BTNReculer", "onTouch: Laché");
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    publishMessage("Feldspath/controle", "reculer");
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    publishMessage("Feldspath/controle", "arreter");
                 }
                 return false;
             }
@@ -58,10 +74,10 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNTournerG.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN)
-                    Log.d("BTNTournerG", "onTouch: Appuyé");
-                else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d("BTNTournerG", "onTouch: Laché");
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    publishMessage("Feldspath/controle", "tournerGa");
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    publishMessage("Feldspath/controle", "arreter");
                 }
                 return false;
             }
@@ -69,14 +85,66 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNTournerD.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN)
-                    Log.d("BTNTournerD", "onTouch: Appuyé");
-                else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d("BTNTournerD", "onTouch: Laché");
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    publishMessage("Feldspath/controle", "tournerDr");
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    publishMessage("Feldspath/controle", "arreter");
                 }
                 return false;
             }
         });
     }
 
+    private void initializeMQTT() {
+        try {
+            mqttClient = new MqttClient(BROKER_URL, CLIENT_ID, new MemoryPersistence());
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setCleanSession(true);
+            mqttClient.connect(options);
+            mqttClient.setCallback(new MqttCallback() {
+                @Override
+                public void connectionLost(Throwable cause) {
+                    Log.d("MQTT", "Connection lost: " + cause.getMessage());
+                }
+
+                @Override
+                public void messageArrived(String topic, MqttMessage message) throws Exception {
+                    // Not used in this example
+                }
+
+                @Override
+                public void deliveryComplete(IMqttDeliveryToken token) {
+                    // Not used in this example
+                }
+            });
+        } catch (MqttException e) {
+            Log.e("MQTT", "Failed to initialize MQTT: " + e.getMessage());
+        }
+    }
+
+    private void publishMessage(String topic, String message) {
+        if (mqttClient != null && mqttClient.isConnected()) {
+            try {
+                MqttMessage mqttMessage = new MqttMessage(message.getBytes());
+                mqttMessage.setQos(0);
+                mqttClient.publish(topic, mqttMessage);
+            } catch (MqttException e) {
+                Log.e("MQTT", "Failed to publish message: " + e.getMessage());
+            }
+        } else {
+            Log.w("MQTT", "MQTT client not connected");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mqttClient != null && mqttClient.isConnected()) {
+            try {
+                mqttClient.disconnect();
+            } catch (MqttException e) {
+                Log.e("MQTT", "Failed to disconnect MQTT: " + e.getMessage());
+            }
+        }
+    }
 }

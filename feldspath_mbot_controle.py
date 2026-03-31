@@ -8,7 +8,6 @@ PASSWORD = "qm3b4cu9"
 # MQTT
 BROKER = "broker.emqx.io"
 PORT = 1883
-TOPIC = "mbot2/distance"
 TOPICcontrole = "Feldspath/controle"
 TOPICvitesse = "Feldspath/vitesse"
 TOPIClight = "Feldspath/light"
@@ -27,22 +26,21 @@ vitesse = 20
 def avancer():
     mbot2.drive_speed(vitesse, -vitesse)
     cyberpi.console.println("avancer")
-    
 
 def reculer():
     mbot2.drive_speed(-vitesse, vitesse)
     cyberpi.console.println("reculer")
 
 def arreter():
-    mbot2.drive_speed(0, 0)
+    mbot2.drive_power(0, 0)
     cyberpi.console.println("arreter")
 
 def tournerDr():
-    mbot2.drive_speed(vitesse, vitesse)
+    mbot2.drive_speed(vitesse/2, vitesse/2)
     cyberpi.console.println("tournerDr")
 
 def tournerGa():
-    mbot2.drive_speed(-vitesse, -vitesse)
+    mbot2.drive_speed(-vitesse/2, -vitesse/2)
     cyberpi.console.println("tournerGa")
     
 def light(etat):
@@ -54,9 +52,9 @@ def light(etat):
 def on_mqtt_message(topic, message):
     if isinstance(message, bytes):
         message = message.decode("utf-8")
-    cyberpi.console.println(message)
+        test = str(topic)[2:-1]
     
-    if topic == TOPICcontrole:
+    if test == TOPICcontrole:
         if message == "avancer":
             avancer()
         elif message == "reculer":
@@ -69,9 +67,11 @@ def on_mqtt_message(topic, message):
             tournerGa()
         #    arreter()
         #time.sleep(1)
-    elif topic == TOPICvitesse:
-        vitesse = message * 100
-    elif topic == TOPIClight:
+    elif test == TOPICvitesse:
+        global vitesse 
+        vitesse = int(message)
+        cyberpi.console.println(vitesse)
+    elif test == TOPIClight:
         light(message)
         
         
@@ -104,4 +104,3 @@ else:
     client.subscribe(TOPIClight)
     while True:
         client.check_msg()
-        time.sleep(1)

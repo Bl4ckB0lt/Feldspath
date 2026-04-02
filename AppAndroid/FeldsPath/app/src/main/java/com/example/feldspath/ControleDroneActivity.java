@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +26,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     ImageButton BTNReculer;
     ImageButton BTNTournerG;
     ImageButton BTNTournerD;
-
+    SeekBar SBVitesse;
     private MqttClient mqttClient;
     private static final String BROKER_URL = "tcp://broker.emqx.io:1883";
     private static final String CLIENT_ID = "AndroidDroneController";
@@ -44,7 +45,7 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNReculer = findViewById(R.id.BTNReculer);
         BTNTournerG = findViewById(R.id.BTNTournerG);
         BTNTournerD = findViewById(R.id.BTNTournerD);
-
+        SBVitesse = findViewById(R.id.seekBarVitesse);
         // Initialize MQTT Client
         initializeMQTT();
 
@@ -91,6 +92,24 @@ public class ControleDroneActivity extends AppCompatActivity {
                     publishMessage("Feldspath/controle", "arreter");
                 }
                 return false;
+            }
+        });
+        SBVitesse.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int valeur = 0;
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                valeur = (int)(10+progress*1.4);
+                Log.d("controleur", ""+valeur);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Not used in this example
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                publishMessage("Feldspath/vitesse", ""+valeur);
             }
         });
     }

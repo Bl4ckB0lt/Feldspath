@@ -91,9 +91,16 @@
             </LinearLayout>
 
             <SeekBar
-                android:id="@+id/seekBar7"
+                android:id="@+id/seekBarVitesse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip2"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_weight="0"
+                tools:visibility="invisible" />
 
         </LinearLayout>
     </LinearLayout>

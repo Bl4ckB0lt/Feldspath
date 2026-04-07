@@ -44,10 +44,15 @@ def tournerGa():
     cyberpi.console.println("tournerGa")
     
 def light(etat):
-    if etat == "ON":
-        mbuild.quad_rgb_sensor.set_fill_light("white", 1)
-    elif etat == "OFF":
-        mbuild.quad_rgb_sensor.set_fill_light("OFF", 1)
+        if etat == "ON":
+            cyberpi.console.println("LED : ON")
+            cyberpi.led.show('green green green green green')
+            
+        elif etat == "OFF":
+            cyberpi.console.println("LED : OFF")
+            cyberpi.led.off("all")
+            
+
     
 def on_mqtt_message(topic, message):
     if isinstance(message, bytes):
@@ -99,8 +104,9 @@ while not connected and attempts < 5:
 if not connected:
     cyberpi.console.println("MQTT impossible")
 else:
+    client.subscribe(TOPIClight)    
     client.subscribe(TOPICcontrole)
     client.subscribe(TOPICvitesse)
-    client.subscribe(TOPIClight)
+    
     while True:
         client.check_msg()

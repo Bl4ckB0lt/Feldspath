@@ -13,6 +13,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.chip.Chip;
+
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -27,6 +29,8 @@ public class ControleDroneActivity extends AppCompatActivity {
     ImageButton BTNTournerG;
     ImageButton BTNTournerD;
     SeekBar SBVitesse;
+    Chip ChipLamp;
+    Boolean LampOn = false;
     private MqttClient mqttClient;
     private static final String BROKER_URL = "tcp://broker.emqx.io:1883";
     private static final String CLIENT_ID = "AndroidDroneController";
@@ -46,6 +50,7 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNTournerG = findViewById(R.id.BTNTournerG);
         BTNTournerD = findViewById(R.id.BTNTournerD);
         SBVitesse = findViewById(R.id.seekBarVitesse);
+        ChipLamp = findViewById(R.id.chip);
         // Initialize MQTT Client
         initializeMQTT();
 
@@ -90,6 +95,21 @@ public class ControleDroneActivity extends AppCompatActivity {
                     publishMessage("Feldspath/controle", "tournerDr");
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     publishMessage("Feldspath/controle", "arreter");
+                }
+                return false;
+            }
+        });
+        ChipLamp.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (LampOn){
+                        publishMessage("Feldspath/light", "OFF");
+                        LampOn = false;
+                    } else {
+                        publishMessage("Feldspath/light", "ON");
+                        LampOn = true;
+                    }
                 }
                 return false;
             }

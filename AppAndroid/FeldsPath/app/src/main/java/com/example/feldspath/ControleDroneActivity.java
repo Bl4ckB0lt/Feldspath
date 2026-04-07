@@ -59,7 +59,6 @@ public class ControleDroneActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("Feldspath/controle", "avancer");
-                    Log.d("controleur", "avancer");
                 } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     publishMessage("Feldspath/controle", "arreter");
                 }

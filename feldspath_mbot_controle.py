@@ -1,4 +1,4 @@
-import time, cyberpi, mbot2, random
+import time, cyberpi, mbot2, random,mbuild
 from mqtt import MQTTClient
 
 # WIFI
@@ -47,10 +47,13 @@ def light(etat):
         if etat == "ON":
             cyberpi.console.println("LED : ON")
             cyberpi.led.show('green green green green green')
+            mbuild.ultrasonic2.set_bri(100, "all", 1)
             
         elif etat == "OFF":
             cyberpi.console.println("LED : OFF")
             cyberpi.led.off("all")
+            mbuild.ultrasonic2.set_bri(0, "all", 1)
+
             
 
     

@@ -18,7 +18,7 @@ public class GestionDonnee extends AppCompatActivity {
     private Spinner sp_trie;
     private CalendarView cv_trieParDate;
     private RecyclerView rv_data;
-    private Button btnRetour;
+    private Button btnRetour2;
 
 
     @Override
@@ -34,8 +34,8 @@ public class GestionDonnee extends AppCompatActivity {
         sp_trie = findViewById(R.id.sp_trie);
         cv_trieParDate = findViewById(R.id.CV_trieParDate);
         rv_data = findViewById(R.id.rv_affichageData);
-        btnRetour = findViewById(R.id.btn_retourdepuisGestionData);
-        btnRetour.setOnClickListener(new View.OnClickListener() {
+        btnRetour2 = findViewById(R.id.btn_retourdepuisGestionData);
+        btnRetour2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();

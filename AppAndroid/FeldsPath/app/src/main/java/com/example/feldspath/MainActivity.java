@@ -17,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     //test
     FloatingActionButton button;
     Button b_controle_drone;
+    Button b_gestionData;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,11 +32,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         b_controle_drone = findViewById(R.id.ControleDrone);
+        b_gestionData = findViewById(R.id.gestionData);
 
         b_controle_drone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent unIntent = new Intent(getApplicationContext(),ControleDroneActivity.class);
+                startActivity(unIntent);
+            }
+        });
+        b_gestionData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent unIntent = new Intent(getApplicationContext(),GestionDonnee.class);
                 startActivity(unIntent);
             }
         });

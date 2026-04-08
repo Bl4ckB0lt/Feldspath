@@ -1,9 +1,11 @@
 package com.example.feldspath;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
@@ -31,6 +33,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     SeekBar SBVitesse;
     Chip ChipLamp;
     Boolean LampOn = false;
+    private Button btnRetour;
     private MqttClient mqttClient;
     private static final String BROKER_URL = "tcp://broker.emqx.io:1883";
     private static final String CLIENT_ID = "AndroidDroneController";
@@ -50,9 +53,20 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNTournerG = findViewById(R.id.BTNTournerG);
         BTNTournerD = findViewById(R.id.BTNTournerD);
         SBVitesse = findViewById(R.id.seekBarVitesse);
+
+        btnRetour=findViewById(R.id.btn_retourMenuDepuisControle);
+
         ChipLamp = findViewById(R.id.chip);
         // Initialize MQTT Client
         initializeMQTT();
+
+        btnRetour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
 
         BTNAvancer.setOnTouchListener(new View.OnTouchListener() {
             @Override

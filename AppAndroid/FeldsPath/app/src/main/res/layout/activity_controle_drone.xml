@@ -103,6 +103,13 @@
                 tools:visibility="invisible" />
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_retourMenuDepuisControle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="retour" />
     </LinearLayout>
 
 </FrameLayout>

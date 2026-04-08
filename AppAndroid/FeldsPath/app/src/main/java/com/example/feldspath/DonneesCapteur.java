@@ -1,9 +1,12 @@
 package com.example.feldspath;
 
+import java.sql.Timestamp;
+
 public class DonneesCapteur {
-    float gaz;
-    float humidite;
-    double temperature;
+    private Timestamp Date;
+    private float gaz;
+    private float humidite;
+    private double temperature;
 
     public DonneesCapteur(float gaz, float humidite, double temperature) {
         this.gaz = gaz;

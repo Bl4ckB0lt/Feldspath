@@ -54,7 +54,7 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNTournerD = findViewById(R.id.BTNTournerD);
         SBVitesse = findViewById(R.id.seekBarVitesse);
 
-        btnRetour=findViewById(R.id.btn_retourMenuDepuisControle);
+        btnRetour = findViewById(R.id.btn_retourMenuDepuisControle);
 
         ChipLamp = findViewById(R.id.chip);
         // Initialize MQTT Client
@@ -112,11 +112,11 @@ public class ControleDroneActivity extends AppCompatActivity {
                 return false;
             }
         });
-        ChipLamp.setOnTouchListener(new View.OnTouchListener(){
+        ChipLamp.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (LampOn){
+                    if (LampOn) {
                         publishMessage("Feldspath/light", "OFF");
                         LampOn = false;
                     } else {
@@ -129,10 +129,11 @@ public class ControleDroneActivity extends AppCompatActivity {
         });
         SBVitesse.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int valeur = 0;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                valeur = (int)(10+progress*1.4);
-                Log.d("controleur", ""+valeur);
+                valeur = (int) (10 + progress * 1.4);
+                Log.d("controleur", "" + valeur);
             }
 
             @Override
@@ -142,7 +143,7 @@ public class ControleDroneActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                publishMessage("Feldspath/vitesse", ""+valeur);
+                publishMessage("Feldspath/vitesse", "" + valeur);
             }
         });
     }

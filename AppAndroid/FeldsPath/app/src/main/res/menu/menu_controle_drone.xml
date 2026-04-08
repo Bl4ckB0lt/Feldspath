@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_lampe"
+        android:title="Allumer / Éteindre lampe"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_deconnecter"
+        android:title="Déconnecter MQTT"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_parametres"
+        android:title="Paramètres"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_retour"
+        android:title="Retour à l'accueil"
+        app:showAsAction="never" />
+
+</menu>

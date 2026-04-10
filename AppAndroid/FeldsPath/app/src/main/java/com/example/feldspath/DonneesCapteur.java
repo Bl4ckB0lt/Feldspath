@@ -6,9 +6,9 @@ public class DonneesCapteur {
     private Timestamp Date;
     private float gaz;
     private float humidite;
-    private double temperature;
+    private float temperature;
 
-    public DonneesCapteur(float gaz, float humidite, double temperature) {
+    public DonneesCapteur(float gaz, float humidite, float temperature) {
         this.gaz = gaz;
         this.humidite = humidite;
         this.temperature = temperature;
@@ -38,7 +38,7 @@ public class DonneesCapteur {
         return temperature;
     }
 
-    public void setTemperature(double temperature) {
+    public void setTemperature(float temperature) {
         this.temperature = temperature;
     }
 }

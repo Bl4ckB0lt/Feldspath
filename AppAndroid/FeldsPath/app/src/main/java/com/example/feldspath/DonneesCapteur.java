@@ -14,6 +14,10 @@ public class DonneesCapteur {
         this.temperature = temperature;
     }
 
+    public Timestamp getDate() {
+        return Date;
+    }
+
     public float getGaz() {
         return gaz;
     }

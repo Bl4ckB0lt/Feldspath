@@ -1,9 +1,10 @@
 package com.example.feldspath;
 
-import java.sql.Timestamp;
-
+import androidx.room.*;
+@Entity
 public class DonneesCapteur {
-    private Timestamp Date;
+    @PrimaryKey(autoGenerate = true)
+    private long date; // stocké en millisecondes (long)
     private float gaz;
     private float humidite;
     private float temperature;
@@ -12,18 +13,15 @@ public class DonneesCapteur {
         this.gaz = gaz;
         this.humidite = humidite;
         this.temperature = temperature;
+        this.date = System.currentTimeMillis(); //Date automatique en millisecondes du temps présent
     }
 
-    public Timestamp getDate() {
-        return Date;
+    public long getDate() {
+        return date;
     }
 
-    public float getGaz() {
-        return gaz;
-    }
-
-    public void setGaz(float gaz) {
-        this.gaz = gaz;
+    public void setDate(long date) {
+        this.date = date;
     }
 
     public float getHumidite() {
@@ -34,7 +32,15 @@ public class DonneesCapteur {
         this.humidite = humidite;
     }
 
-    public double getTemperature() {
+    public float getGaz() {
+        return gaz;
+    }
+
+    public void setGaz(float gaz) {
+        this.gaz = gaz;
+    }
+
+    public float getTemperature() {
         return temperature;
     }
 

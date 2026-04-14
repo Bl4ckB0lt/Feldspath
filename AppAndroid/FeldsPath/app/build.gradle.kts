@@ -42,4 +42,15 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    val room_version = "2.6.1"
+// bibliothèques permettant d'intéragir avec une BD SQLite
+    implementation("androidx.room:room-runtime:$room_version")
+// permet de prendre en compte les annotations Room
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+// permettant d'utiliser des types réactifs comme Observable
+// utiles lors des accès asynchrones
+    implementation("androidx.room:room-rxjava2:$room_version")
+    implementation("androidx.room:room-rxjava3:$room_version")
+
 }

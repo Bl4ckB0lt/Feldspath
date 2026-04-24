@@ -32,6 +32,10 @@ public class ParametreActivity extends AppCompatActivity {
         et_humiditySeuil = findViewById(R.id.et_humiditySeuil);
         et_tempSeuil = findViewById(R.id.et_tempSeuil);
 
+        et_gazSeuil.setText(String.valueOf(MainActivity.gazSeuil));
+        et_humiditySeuil.setText(String.valueOf(MainActivity.humiditySeuil));
+        et_tempSeuil.setText(String.valueOf(MainActivity.temperatureSeuil));
+
         btn_AcceptModifSeuil = findViewById(R.id.btn_AcceptModifSeuil);
 
         btn_AcceptModifSeuil.setOnClickListener(new View.OnClickListener() {

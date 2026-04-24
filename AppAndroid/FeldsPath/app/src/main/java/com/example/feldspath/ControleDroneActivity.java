@@ -27,6 +27,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ControleDroneActivity extends AppCompatActivity {
     ImageButton BTNAvancer;
@@ -185,14 +186,24 @@ public class ControleDroneActivity extends AppCompatActivity {
                     Log.d("MQTT", "Message reçu sur [" + topic + "] : " + payload);
 
                     // Mise à jour de l'UI sur le thread principal
-                    runOnUiThread(() -> {
-                        if (topic.equals("Feldspath/data")) {
-                            String[] data = payload.split("/");
+                    if (topic.equals("Feldspath/data")) {
+                        String[] data = payload.split("/");
+                        Float[] dataF = new Float[]{0f,0f,0f,0f,0f,0f,0f,0f,0f};
+                        for (int i = 0; i < data.length; i++) {
+                            dataF[i] = Float.parseFloat(data[i]);
+                        }
+                        boolean aberrant = false;
+                        if (dataF[0]>=MainActivity.temperatureSeuil||dataF[1]>=MainActivity.humiditySeuil||dataF[3]>=MainActivity.gazSeuil){
+                            aberrant = true;
+                        }
+                        DonneesCapteur dataFormat = new DonneesCapteur(dataF[3],dataF[1],dataF[0],aberrant);
+
+                        runOnUiThread(() -> {
                             TVTemp.setText(data[0]);
                             TVHum.setText(data[1]);
                             TVCo2.setText(data[3]);
-                        }
-                    });
+                        });
+                    }
                 }
 
                 @Override

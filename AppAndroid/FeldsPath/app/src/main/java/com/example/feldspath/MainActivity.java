@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         b_gestionData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent unIntent = new Intent(getApplicationContext(),GestionDonnee.class);
+                Intent unIntent = new Intent(getApplicationContext(), GestionDonneeActivity.class);
                 startActivity(unIntent);
             }
         });

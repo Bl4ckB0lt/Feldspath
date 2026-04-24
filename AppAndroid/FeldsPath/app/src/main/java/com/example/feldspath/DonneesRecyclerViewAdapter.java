@@ -32,10 +32,16 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
     @Override
     public void onBindViewHolder(@NonNull DonneesViewHolder holder, int position) {
         DonneesCapteur uneData = lstData.get(position);
-        holder.tv_date.setText(uneData.getDate() + "");
-        holder.tv_gaz.setText(uneData.getGaz() + "");
-        holder.tv_humidite.setText(uneData.getHumidite() + "");
-        holder.tv_temperature.setText(uneData.getTemperature() + "");
+
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
+                "dd/MM/yyyy HH:mm:ss", java.util.Locale.getDefault()
+        );
+        String dateFormatee = sdf.format(new java.util.Date(uneData.getDate()));
+
+        holder.tv_date.setText(dateFormatee + "");
+        holder.tv_gaz.setText(String.format(uneData.getGaz() + ""));
+        holder.tv_humidite.setText(String.format(uneData.getHumidite() + ""));
+        holder.tv_temperature.setText(String.format(uneData.getTemperature() + ""));
 
     }
 

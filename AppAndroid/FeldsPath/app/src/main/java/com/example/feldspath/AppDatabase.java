@@ -47,6 +47,11 @@ public abstract class AppDatabase extends RoomDatabase {
             super.onCreate(db);
             Log.d("", "Création du jeu d'essai");
 
+            //INSTANCE.databaseWriteExecutor.execute(() -> {
+            //    INSTANCE.categorieDao().insert(new Categorie(1, "Maison"));
+
+            //});
+
         }
 
         @Override

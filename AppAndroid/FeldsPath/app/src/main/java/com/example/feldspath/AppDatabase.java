@@ -47,10 +47,11 @@ public abstract class AppDatabase extends RoomDatabase {
             super.onCreate(db);
             Log.d("", "Création du jeu d'essai");
 
-            //INSTANCE.databaseWriteExecutor.execute(() -> {
-            //    INSTANCE.categorieDao().insert(new Categorie(1, "Maison"));
+            INSTANCE.databaseWriteExecutor.execute(() -> {
+                INSTANCE.dataDao().insert(new DonneesCapteur(1, 12,25,true));
+                INSTANCE.dataDao().insert(new DonneesCapteur(0.02f, 0.12f,0.25f,false));
 
-            //});
+            });
 
         }
 

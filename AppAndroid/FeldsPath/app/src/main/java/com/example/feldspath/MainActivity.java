@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
     Button b_controle_drone;
     Button b_gestionData;
 
+    Button b_parametre;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         b_controle_drone = findViewById(R.id.ControleDrone);
         b_gestionData = findViewById(R.id.gestionData);
+        b_parametre = findViewById(R.id.btn_parametre);
 
         b_controle_drone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,6 +48,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent unIntent = new Intent(getApplicationContext(), GestionDonneeActivity.class);
+                startActivity(unIntent);
+            }
+        });
+
+        b_parametre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent unIntent = new Intent(getApplicationContext(), ParametreActivity.class);
                 startActivity(unIntent);
             }
         });

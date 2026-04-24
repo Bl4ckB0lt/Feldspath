@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class GestionDonneeActivity extends AppCompatActivity {
     //------OBJ GRAPHIQUE ------
@@ -40,7 +39,7 @@ public class GestionDonneeActivity extends AppCompatActivity {
         db = AppDatabase.getDatabase(this);
 
         EdgeToEdge.enable(this);
-        setContentView(R.layout.gestiondonne);
+        setContentView(R.layout.activity_gestiondonne);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

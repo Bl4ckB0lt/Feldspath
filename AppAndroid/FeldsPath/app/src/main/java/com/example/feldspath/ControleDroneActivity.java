@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +26,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import java.util.ArrayList;
+
 public class ControleDroneActivity extends AppCompatActivity {
     ImageButton BTNAvancer;
     ImageButton BTNReculer;
@@ -33,6 +36,9 @@ public class ControleDroneActivity extends AppCompatActivity {
     SeekBar SBVitesse;
     Chip ChipLamp;
     Boolean LampOn = false;
+    TextView TVTemp;
+    TextView TVHum;
+    TextView TVCo2;
     private Button btnRetour;
     private MqttClient mqttClient;
     private static final String BROKER_URL = "tcp://broker.emqx.io:1883";
@@ -53,6 +59,9 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNTournerG = findViewById(R.id.BTNTournerG);
         BTNTournerD = findViewById(R.id.BTNTournerD);
         SBVitesse = findViewById(R.id.seekBarVitesse);
+        TVTemp = findViewById(R.id.TVTemp);
+        TVHum = findViewById(R.id.TVHum);
+        TVCo2 = findViewById(R.id.TVCo2);
 
         btnRetour = findViewById(R.id.btn_retourMenuDepuisControle);
 
@@ -177,8 +186,11 @@ public class ControleDroneActivity extends AppCompatActivity {
 
                     // Mise à jour de l'UI sur le thread principal
                     runOnUiThread(() -> {
-                        if (topic.equals("Feldspath/statut")) {
-                            // Traite le message ici, ex :
+                        if (topic.equals("Feldspath/data")) {
+                            String[] data = payload.split("/");
+                            TVTemp.setText(data[0]);
+                            TVHum.setText(data[1]);
+                            TVCo2.setText(data[3]);
                         }
                     });
                 }

@@ -1,0 +1,2 @@
+#define SECRET_SSID "HONOR200"
+#define SECRET_PASS "qm3b4cu9"

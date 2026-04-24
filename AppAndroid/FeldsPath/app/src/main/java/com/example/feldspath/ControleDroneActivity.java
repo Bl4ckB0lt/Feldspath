@@ -154,6 +154,16 @@ public class ControleDroneActivity extends AppCompatActivity {
             MqttConnectOptions options = new MqttConnectOptions();
             options.setCleanSession(true);
             mqttClient.connect(options);
+            mqttClient.subscribe("Feldspath/temperature", 1);
+            mqttClient.subscribe("Feldspath/humidity", 1);
+            mqttClient.subscribe("Feldspath/pressure", 1);
+            mqttClient.subscribe("Feldspath/co2", 1);
+            mqttClient.subscribe("Feldspath/gas_resistor", 1);
+            mqttClient.subscribe("Feldspath/iaq", 1);
+            mqttClient.subscribe("Feldspath/iaq_accuracy", 1);
+            mqttClient.subscribe("Feldspath/static_iaq", 1);
+            mqttClient.subscribe("Feldspath/voc", 1);
+            mqttClient.subscribe("Feldspath/data", 1);
             mqttClient.setCallback(new MqttCallback() {
                 @Override
                 public void connectionLost(Throwable cause) {
@@ -162,7 +172,15 @@ public class ControleDroneActivity extends AppCompatActivity {
 
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
-                    // Not used in this example
+                    String payload = new String(message.getPayload());
+                    Log.d("MQTT", "Message reçu sur [" + topic + "] : " + payload);
+
+                    // Mise à jour de l'UI sur le thread principal
+                    runOnUiThread(() -> {
+                        if (topic.equals("Feldspath/statut")) {
+                            // Traite le message ici, ex :
+                        }
+                    });
                 }
 
                 @Override
@@ -170,6 +188,7 @@ public class ControleDroneActivity extends AppCompatActivity {
                     // Not used in this example
                 }
             });
+            Log.d("MQTT", "initializeMQTT: Réussie");
         } catch (MqttException e) {
             Log.e("MQTT", "Failed to initialize MQTT: " + e.getMessage());
         }

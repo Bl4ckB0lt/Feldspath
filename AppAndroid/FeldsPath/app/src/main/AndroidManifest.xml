@@ -19,6 +19,9 @@
             android:name=".GestionDonneeActivity"
             android:exported="false" />
         <activity
+            android:name=".ParametreActivity"
+            android:exported="false" />
+        <activity
             android:name=".ControleDroneActivity"
             android:exported="false" />
         <activity

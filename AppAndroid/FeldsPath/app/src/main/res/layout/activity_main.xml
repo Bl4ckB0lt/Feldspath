@@ -14,16 +14,16 @@
         android:text="Contrôle" />
 
     <Button
+        android:id="@+id/gestionData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Données" />
+
+    <Button
         android:id="@+id/btn_parametre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Parametre" />
-
-    <Button
-        android:id="@+id/gestionData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Données" />
 
 </LinearLayout>

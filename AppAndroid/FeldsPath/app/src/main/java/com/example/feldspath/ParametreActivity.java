@@ -50,9 +50,9 @@ public class ParametreActivity extends AppCompatActivity {
                 if (!strHumidite.isEmpty())MainActivity.humiditySeuil = Float.parseFloat(strHumidite);
                 if (!strTemp.isEmpty()) MainActivity.temperatureSeuil = Float.parseFloat(strTemp);
                 Toast.makeText(ParametreActivity.this, "Changement pris en compte", Toast.LENGTH_SHORT).show();
-                Log.d("type",MainActivity.gazSeuil+"");
-                Log.d("type",MainActivity.temperatureSeuil+"");
-                Log.d("type",MainActivity.humiditySeuil+"");
+                Log.d("type","GAZ"+MainActivity.gazSeuil+"");
+                Log.d("type","TEMPERATURE"+MainActivity.temperatureSeuil+"");
+                Log.d("type","HUMIDITY"+MainActivity.humiditySeuil+"");
                 finish(); // Retour à l'écran précédent
             }
         });

@@ -21,6 +21,10 @@ public class MainActivity extends AppCompatActivity {
 
     Button b_parametre;
 
+    public static float gazSeuil;
+    public static float humiditySeuil;
+    public static float temperatureSeuil;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,5 +63,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(unIntent);
             }
         });
+
+        gazSeuil = 700;
+        humiditySeuil = 40;
+        temperatureSeuil = 30;
     }
 }

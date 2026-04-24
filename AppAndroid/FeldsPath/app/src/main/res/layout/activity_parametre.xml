@@ -47,13 +47,12 @@
             android:text="humidité:" />
 
         <EditText
-            android:id="@+id/editTextText5"
+            android:id="@+id/et_humiditySeuil"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="text"
-            android:text="Name" />
+            android:inputType="text" />
 
     </LinearLayout>
 
@@ -70,14 +69,19 @@
             android:text="gaz:" />
 
         <EditText
-            android:id="@+id/editTextText6"
+            android:id="@+id/et_gazSeuil"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="text"
-            android:text="Name" />
+            android:inputType="text" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_AcceptModifSeuil"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Modifier le seuil de sauvegarde automatique de données" />
 
 </LinearLayout>

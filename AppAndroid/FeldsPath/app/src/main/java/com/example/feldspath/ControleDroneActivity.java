@@ -34,6 +34,9 @@ public class ControleDroneActivity extends AppCompatActivity {
     ImageButton BTNReculer;
     ImageButton BTNTournerG;
     ImageButton BTNTournerD;
+
+    ImageButton Btn_prendreDonnee;
+
     SeekBar SBVitesse;
     Chip ChipLamp;
     Boolean LampOn = false;
@@ -43,7 +46,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     private AppDatabase db;
     private Button btnRetour;
     private MqttClient mqttClient;
-    private static final String BROKER_URL = "tcp://192.168.64.2:1883";
+    private static final String BROKER_URL = "tcp://broker.emqx.io:1883"; // rappel ancien brocker : broker.emqx.io      nouveau : 192.168.64.2
     private static final String CLIENT_ID = "AndroidDroneController";
 
     @Override
@@ -61,6 +64,8 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNReculer = findViewById(R.id.BTNReculer);
         BTNTournerG = findViewById(R.id.BTNTournerG);
         BTNTournerD = findViewById(R.id.BTNTournerD);
+        Btn_prendreDonnee = findViewById(R.id.Btn_prendreDonnee);
+
         SBVitesse = findViewById(R.id.seekBarVitesse);
         TVTemp = findViewById(R.id.TVTemp);
         TVHum = findViewById(R.id.TVHum);
@@ -80,7 +85,26 @@ public class ControleDroneActivity extends AppCompatActivity {
             }
         });
 
+        Btn_prendreDonnee.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                DonneesCapteur dataFormat;
 
+                String TVCO2VAL = TVCo2.getText().toString();
+                String TVHumVAL = TVHum.getText().toString();
+                String TVTempVAL = TVTemp.getText().toString();
+                Log.d("btn", "" + TVTempVAL);
+                if (TVHum.getCurrentTextColor() == 0xFFFF0000) {
+                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), true);
+                } else {
+                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), false);
+                }
+                Log.d("btn", "Avant Sauvegarde : temp=" + Float.parseFloat(TVCO2VAL) + " hum=" + Float.parseFloat(TVHumVAL) + " co2=" + Float.parseFloat(TVTempVAL) + "");
+                db.dataDao().insert(dataFormat);
+                Log.d("btn", "Sauvegardé : temp=" + Float.parseFloat(TVCO2VAL) + " hum=" + Float.parseFloat(TVHumVAL) + " co2=" + Float.parseFloat(TVTempVAL) + "");
+                return false;
+            }
+        });
         BTNAvancer.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -191,25 +215,25 @@ public class ControleDroneActivity extends AppCompatActivity {
                     // Mise à jour de l'UI sur le thread principal
                     if (topic.equals("Feldspath/data")) {
                         String[] data = payload.split("/");
-                        Float[] dataF = new Float[]{0f,0f,0f,0f,0f,0f,0f,0f,0f};
+                        Float[] dataF = new Float[]{0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
                         for (int i = 0; i < data.length; i++) {
                             dataF[i] = Float.parseFloat(data[i]);
                         }
                         boolean aberrant = false;
-                        if (dataF[0]>=MainActivity.temperatureSeuil||dataF[1]>=MainActivity.humiditySeuil||dataF[3]>=MainActivity.gazSeuil){
+                        if (dataF[0] >= MainActivity.temperatureSeuil || dataF[1] >= MainActivity.humiditySeuil || dataF[3] >= MainActivity.gazSeuil) {
                             aberrant = true;
                         }
-                        DonneesCapteur dataFormat = new DonneesCapteur(dataF[3],dataF[1],dataF[0],aberrant);
+                        DonneesCapteur dataFormat = new DonneesCapteur(dataF[3], dataF[1], dataF[0], aberrant);
                         db.dataDao().insert(dataFormat);
                         runOnUiThread(() -> {
-                            if (dataFormat.getValeursAberrantes()){
+                            if (dataFormat.getValeursAberrantes()) {
                                 TVCo2.setTextColor(0xFFFF0000);
                                 TVHum.setTextColor(0xFFFF0000);
                                 TVTemp.setTextColor(0xFFFF0000);
                             } else {
-                                TVCo2.setTextColor(0xFF0000FF);
-                                TVHum.setTextColor(0xFF0000FF);
-                                TVTemp.setTextColor(0xFF0000FF);
+                                TVCo2.setTextColor(0xFF00FF00);
+                                TVHum.setTextColor(0xFF00FF00);
+                                TVTemp.setTextColor(0xFF00FF00);
                             }
                             TVTemp.setText(data[0]);
                             TVHum.setText(data[1]);

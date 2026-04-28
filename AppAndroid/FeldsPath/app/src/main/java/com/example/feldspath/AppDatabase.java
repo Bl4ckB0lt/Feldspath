@@ -14,9 +14,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {DonneesCapteur.class}, version = 1)
+@Database(entities = {DonneesCapteur.class, Zone.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract DonnesCapteurDAO dataDao();
+    public abstract ZoneDAO zoneDAO();
 
     private static volatile AppDatabase INSTANCE;
 
@@ -46,6 +47,12 @@ public abstract class AppDatabase extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
             Log.d("", "Création du jeu d'essai");
+            INSTANCE.databaseWriteExecutor.execute(() -> {
+                INSTANCE.zoneDAO().insert(new Zone(1,"jardin"));
+                INSTANCE.dataDao().insert(new DonneesCapteur(1, 12,25,true,1));
+                INSTANCE.dataDao().insert(new DonneesCapteur(0.02f, 0.12f,0.25f,false,1));
+
+            });
 
         }
 

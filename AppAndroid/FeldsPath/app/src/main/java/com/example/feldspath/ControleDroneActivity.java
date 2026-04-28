@@ -95,9 +95,9 @@ public class ControleDroneActivity extends AppCompatActivity {
                 String TVHumVAL = TVHum.getText().toString();
                 String TVTempVAL = TVTemp.getText().toString();
                 if (TVHum.getCurrentTextColor() == 0xFFFF0000) {
-                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), true);
+                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), true,1);
                 } else {
-                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), false);
+                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), false,1);
                 }
                 db.dataDao().insert(dataFormat);
 
@@ -222,7 +222,7 @@ public class ControleDroneActivity extends AppCompatActivity {
                         if (dataF[0] >= MainActivity.temperatureSeuil || dataF[1] >= MainActivity.humiditySeuil || dataF[3] >= MainActivity.gazSeuil) {
                             aberrant = true;
                         }
-                        DonneesCapteur dataFormat = new DonneesCapteur(dataF[3], dataF[1], dataF[0], aberrant);
+                        DonneesCapteur dataFormat = new DonneesCapteur(dataF[3], dataF[1], dataF[0], aberrant,1);
                         db.dataDao().insert(dataFormat);
                         runOnUiThread(() -> {
                             if (dataFormat.getValeursAberrantes()) {

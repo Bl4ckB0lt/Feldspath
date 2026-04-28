@@ -8,7 +8,6 @@ import androidx.room.Query;
 
 import java.util.List;
 @Dao
-
 public interface DonnesCapteurDAO {
         @Query("SELECT * FROM DonneesCapteur")
         LiveData<List<DonneesCapteur>> getAll();

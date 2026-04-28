@@ -40,6 +40,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     TextView TVTemp;
     TextView TVHum;
     TextView TVCo2;
+    private AppDatabase db;
     private Button btnRetour;
     private MqttClient mqttClient;
     private static final String BROKER_URL = "tcp://broker.emqx.io:1883";
@@ -48,6 +49,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        db = AppDatabase.getDatabase(this);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_controle_drone);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -197,8 +199,17 @@ public class ControleDroneActivity extends AppCompatActivity {
                             aberrant = true;
                         }
                         DonneesCapteur dataFormat = new DonneesCapteur(dataF[3],dataF[1],dataF[0],aberrant);
-
+                        db.dataDao().insert(dataFormat);
                         runOnUiThread(() -> {
+                            if (dataFormat.getValeursAberrantes()){
+                                TVCo2.setTextColor(0xFFFF0000);
+                                TVHum.setTextColor(0xFFFF0000);
+                                TVTemp.setTextColor(0xFFFF0000);
+                            } else {
+                                TVCo2.setTextColor(0xFF0000FF);
+                                TVHum.setTextColor(0xFF0000FF);
+                                TVTemp.setTextColor(0xFF0000FF);
+                            }
                             TVTemp.setText(data[0]);
                             TVHum.setText(data[1]);
                             TVCo2.setText(data[3]);

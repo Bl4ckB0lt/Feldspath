@@ -75,6 +75,7 @@ public class ControleDroneActivity extends AppCompatActivity {
         btnRetour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                publishMessage("Feldspath/controle", "arreter");
                 finish();
             }
         });

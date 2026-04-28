@@ -99,9 +99,7 @@ public class ControleDroneActivity extends AppCompatActivity {
                 } else {
                     dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), false);
                 }
-                Log.d("btn", "Avant Sauvegarde : temp=" + Float.parseFloat(TVCO2VAL) + " hum=" + Float.parseFloat(TVHumVAL) + " co2=" + Float.parseFloat(TVTempVAL) + "");
                 db.dataDao().insert(dataFormat);
-                Log.d("btn", "Sauvegardé : temp=" + Float.parseFloat(TVCO2VAL) + " hum=" + Float.parseFloat(TVHumVAL) + " co2=" + Float.parseFloat(TVTempVAL) + "");
                 return false;
             }
         });

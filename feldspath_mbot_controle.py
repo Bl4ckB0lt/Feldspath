@@ -6,7 +6,7 @@ SSID = "HONOR200"
 PASSWORD = "qm3b4cu9"
 
 # MQTT
-BROKER = "192.168.64.2"
+BROKER = "10.218.228.169"
 PORT = 1883
 TOPICcontrole = "Feldspath/controle"
 TOPICvitesse = "Feldspath/vitesse"

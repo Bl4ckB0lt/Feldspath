@@ -43,7 +43,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     private AppDatabase db;
     private Button btnRetour;
     private MqttClient mqttClient;
-    private static final String BROKER_URL = "tcp://broker.emqx.io:1883";
+    private static final String BROKER_URL = "tcp://192.168.64.2:1883";
     private static final String CLIENT_ID = "AndroidDroneController";
 
     @Override

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         gazSeuil = 700;
-        humiditySeuil = 40;
+        humiditySeuil = 70;
         temperatureSeuil = 30;
     }
 }

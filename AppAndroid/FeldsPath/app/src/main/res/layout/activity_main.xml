@@ -29,6 +29,7 @@
         android:id="@+id/btn_parametre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="100"
         android:text="Parametre" />
 
 </LinearLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -18,7 +19,7 @@
             android:text="Zone Actuelle:" />
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/sp_ZoneActuelle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -35,19 +36,19 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/editTextText"
+            android:id="@+id/et_newZone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
             android:inputType="text"
-            android:text="Name" />
+            android:text="Nouvelle Zone" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btn_ajoutNewZone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Ajouter" />
+            android:text="Ajouter une nouvelle zone" />
     </LinearLayout>
 </LinearLayout>

@@ -20,10 +20,13 @@ public class MainActivity extends AppCompatActivity {
     Button b_gestionData;
 
     Button b_parametre;
+    Button btn_zones;
+
 
     public static float gazSeuil;
     public static float humiditySeuil;
     public static float temperatureSeuil;
+    public static String zoneActuelle;
 
 
     @Override
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         b_controle_drone = findViewById(R.id.ControleDrone);
         b_gestionData = findViewById(R.id.gestionData);
         b_parametre = findViewById(R.id.btn_parametre);
+        btn_zones=findViewById(R.id.btn_zones);
 
         b_controle_drone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,6 +52,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(unIntent);
             }
         });
+
+        btn_zones.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent unIntent = new Intent(getApplicationContext(),ZoneActivity.class);
+                startActivity(unIntent);
+            }});
+
+
         b_gestionData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,5 +80,6 @@ public class MainActivity extends AppCompatActivity {
         gazSeuil = 700;
         humiditySeuil = 70;
         temperatureSeuil = 30;
+        zoneActuelle = "ZONE";
     }
 }

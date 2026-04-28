@@ -12,8 +12,7 @@ public class Zone {
     long id_zone;
     String libelle_zone;
 
-    public Zone(long id_zone, String libelle_zone) {
-        this.id_zone = id_zone;
+    public Zone( String libelle_zone) {
         this.libelle_zone = libelle_zone;
     }
 

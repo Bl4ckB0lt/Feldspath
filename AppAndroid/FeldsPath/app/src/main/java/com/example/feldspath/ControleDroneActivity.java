@@ -86,9 +86,9 @@ public class ControleDroneActivity extends AppCompatActivity {
             }
         });
 
-        Btn_prendreDonnee.setOnTouchListener(new View.OnTouchListener() {
+        Btn_prendreDonnee.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public void onClick(View v) {
                 DonneesCapteur dataFormat;
 
                 String TVCO2VAL = TVCo2.getText().toString();
@@ -100,8 +100,6 @@ public class ControleDroneActivity extends AppCompatActivity {
                     dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), false,1);
                 }
                 db.dataDao().insert(dataFormat);
-
-                return false;
             }
         });
         BTNAvancer.setOnTouchListener(new View.OnTouchListener() {

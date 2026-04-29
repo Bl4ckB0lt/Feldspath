@@ -8,7 +8,7 @@ char pass[] = SECRET_PASS;
 int status  = WL_IDLE_STATUS;
 
 // === Configuration MQTT ===
-const char* mqttServer = "broker.emqx.io";
+const char* mqttServer = "10.218.228.169";
 const int   mqttPort   = 1883;
 const char* mqttUser   = "";
 const char* mqttPass   = "";

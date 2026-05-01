@@ -50,5 +50,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Ajouter une nouvelle zone" />
+
+        <Button
+            android:id="@+id/btn_retourzone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="Retour" />
     </LinearLayout>
 </LinearLayout>

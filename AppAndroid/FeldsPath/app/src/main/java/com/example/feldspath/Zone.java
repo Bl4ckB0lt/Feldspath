@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
 
-@Entity
 
+@Entity(tableName = "zone")
 public class Zone {
     @PrimaryKey(autoGenerate = true)
     long id_zone;

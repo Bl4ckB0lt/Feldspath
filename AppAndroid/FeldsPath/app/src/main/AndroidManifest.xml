@@ -24,6 +24,10 @@
         <activity
             android:name=".ControleDroneActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ZoneActivity"
+            />
         <activity
             android:name=".MainActivity"
             android:exported="true">

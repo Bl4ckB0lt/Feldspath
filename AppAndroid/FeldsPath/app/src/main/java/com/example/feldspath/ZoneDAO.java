@@ -18,8 +18,8 @@ public interface ZoneDAO {
     LiveData<Zone> getZoneById(long uneId);
 
     @Insert
-    void insert(Zone uneId);
+    void insert(Zone zone);
 
     @Delete
-    void delete(Zone uneId);
+    void delete(Zone zone);
 }

@@ -4,6 +4,7 @@ import static java.security.AccessController.getContext;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -14,18 +15,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ZoneActivity extends AppCompatActivity {
 
     private AppDatabase db;
-
+//------------ VAR Graphiques ---------
     private Spinner sp_ZoneActuelle;
     private EditText et_newZone;
     private Button btn_ajoutNewZone;
     private Button btn_retourzone;
+
+    //--------- VAR DE CODE --------
+    private ArrayAdapter<String> spinnerAdapter;
+    private List<String> zoneNames = new ArrayList<>();
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor(); // pour faire le DAO
 
@@ -45,6 +53,26 @@ public class ZoneActivity extends AppCompatActivity {
         et_newZone = findViewById(R.id.et_newZone);
         btn_ajoutNewZone = findViewById(R.id.btn_ajoutNewZone);
         btn_retourzone = findViewById(R.id.btn_retourzone);
+
+
+        // gestion de l'adapter du spinner
+        spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, zoneNames);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sp_ZoneActuelle.setAdapter(spinnerAdapter);
+
+        // le spinner se met à jour automatiquement et affiche le nom des zones et affiche en 1 er la zone actuelle
+        db.zoneDAO().getAll().observe(this, new Observer<List<Zone>>() {
+            @Override
+            public void onChanged(List<Zone> zones) {
+                zoneNames.clear();
+                for (Zone z : zones) {
+                    zoneNames.add(z.libelle_zone);
+                }
+                spinnerAdapter.notifyDataSetChanged();
+            }
+        });
+
+
 
         btn_retourzone.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     public static float gazSeuil;
     public static float humiditySeuil;
     public static float temperatureSeuil;
-    public static String zoneActuelle;
+    public static long idzoneActuelle;
 
 
     @Override
@@ -80,6 +80,6 @@ public class MainActivity extends AppCompatActivity {
         gazSeuil = 700;
         humiditySeuil = 70;
         temperatureSeuil = 30;
-        zoneActuelle = "zone";
+        idzoneActuelle = 1;
     }
 }

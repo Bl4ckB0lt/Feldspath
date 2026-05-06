@@ -220,7 +220,7 @@ public class ControleDroneActivity extends AppCompatActivity {
                         if (dataF[0] >= MainActivity.temperatureSeuil || dataF[1] >= MainActivity.humiditySeuil || dataF[3] >= MainActivity.gazSeuil) {
                             aberrant = true;
                         }
-                        DonneesCapteur dataFormat = new DonneesCapteur(dataF[3], dataF[1], dataF[0], aberrant,1);
+                        DonneesCapteur dataFormat = new DonneesCapteur(dataF[3], dataF[1], dataF[0], aberrant,MainActivity.idzoneActuelle);
                         db.dataDao().insert(dataFormat);
                         runOnUiThread(() -> {
                             if (dataFormat.getValeursAberrantes()) {

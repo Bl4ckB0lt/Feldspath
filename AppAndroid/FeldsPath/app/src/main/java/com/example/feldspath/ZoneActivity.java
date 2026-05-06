@@ -4,6 +4,7 @@ import static java.security.AccessController.getContext;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,7 +26,7 @@ import java.util.concurrent.Executors;
 public class ZoneActivity extends AppCompatActivity {
 
     private AppDatabase db;
-//------------ VAR Graphiques ---------
+    //------------ VAR Graphiques ---------
     private Spinner sp_ZoneActuelle;
     private EditText et_newZone;
     private Button btn_ajoutNewZone;
@@ -69,16 +70,33 @@ public class ZoneActivity extends AppCompatActivity {
                     zoneNames.add(z.libelle_zone);
                 }
                 spinnerAdapter.notifyDataSetChanged();
+
+                // Repositionne le spinner sur la zone actuellement sélectionnée
+                int index = zoneNames.indexOf(MainActivity.idzoneActuelle);
+                if (index >= 0) {
+                    sp_ZoneActuelle.setSelection(index);
+                }
             }
         });
-
+        sp_ZoneActuelle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                MainActivity.idzoneActuelle = zoneNames.indexOf(MainActivity.idzoneActuelle);
+                Toast.makeText(ZoneActivity.this, "Zone sélectionnée : " + MainActivity.idzoneActuelle, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // ne Rien à faire a preciser sinon ca fait de la merde avec l'adapter view
+            }
+        });
 
 
         btn_retourzone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
-            }});
+            }
+        });
         btn_ajoutNewZone.setOnClickListener(
                 new View.OnClickListener() {
                     @Override

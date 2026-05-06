@@ -47,7 +47,9 @@ public abstract class AppDatabase extends RoomDatabase {
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
             Log.d("", "Création du jeu d'essai");
-
+            INSTANCE.databaseWriteExecutor.execute(() -> {
+                INSTANCE.zoneDAO().insert(new Zone( "zone"));
+            });
 
         }
 

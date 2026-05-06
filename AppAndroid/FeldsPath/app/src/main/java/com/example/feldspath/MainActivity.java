@@ -80,6 +80,6 @@ public class MainActivity extends AppCompatActivity {
         gazSeuil = 700;
         humiditySeuil = 70;
         temperatureSeuil = 30;
-        zoneActuelle = "ZONE";
+        zoneActuelle = "zone";
     }
 }

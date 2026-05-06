@@ -1,6 +1,6 @@
 package com.example.feldspath;
 
-import android.content.Intent;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -25,15 +25,22 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class ControleDroneActivity extends AppCompatActivity {
     ImageButton BTNAvancer;
     ImageButton BTNReculer;
     ImageButton BTNTournerG;
     ImageButton BTNTournerD;
+    ImageButton Btn_enregistrerAudio;
 
     ImageButton Btn_prendreDonnee;
 
@@ -45,9 +52,14 @@ public class ControleDroneActivity extends AppCompatActivity {
     TextView TVCo2;
     private AppDatabase db;
     private Button btnRetour;
+    // variables utiles hors xml
+    private MediaRecorder mediaRecorder;
+    private String audioFilePath;
+    private boolean isRecording = false;
+
     private MqttClient mqttClient;
     private static final String BROKER_URL = "tcp://10.218.228.169:1883"; // rappel ancien brocker : broker.emqx.io      nouveau : 192.168.64.2
-   // ssl ws wss tcp
+    // ssl ws wss tcp
     private static final String CLIENT_ID = "AndroidDroneController";
 
     @Override
@@ -67,6 +79,7 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNTournerD = findViewById(R.id.BTNTournerD);
         Btn_prendreDonnee = findViewById(R.id.Btn_prendreDonnee);
 
+        Btn_enregistrerAudio = findViewById(R.id.btn_enregistrerAudio);
         SBVitesse = findViewById(R.id.seekBarVitesse);
         TVTemp = findViewById(R.id.TVTemp);
         TVHum = findViewById(R.id.TVHum);
@@ -85,6 +98,16 @@ public class ControleDroneActivity extends AppCompatActivity {
                 finish();
             }
         });
+        Btn_enregistrerAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isRecording) {
+                    startRecording();
+                } else {
+                    stopRecordingAndSend();
+                }
+            }
+        });
 
         Btn_prendreDonnee.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,9 +118,9 @@ public class ControleDroneActivity extends AppCompatActivity {
                 String TVHumVAL = TVHum.getText().toString();
                 String TVTempVAL = TVTemp.getText().toString();
                 if (TVHum.getCurrentTextColor() == 0xFFFF0000) {
-                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), true,1);
+                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), true, 1);
                 } else {
-                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), false,1);
+                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), false, 1);
                 }
                 db.dataDao().insert(dataFormat);
             }
@@ -220,7 +243,7 @@ public class ControleDroneActivity extends AppCompatActivity {
                         if (dataF[0] >= MainActivity.temperatureSeuil || dataF[1] >= MainActivity.humiditySeuil || dataF[3] >= MainActivity.gazSeuil) {
                             aberrant = true;
                         }
-                        DonneesCapteur dataFormat = new DonneesCapteur(dataF[3], dataF[1], dataF[0], aberrant,MainActivity.idzoneActuelle);
+                        DonneesCapteur dataFormat = new DonneesCapteur(dataF[3], dataF[1], dataF[0], aberrant, MainActivity.idzoneActuelle);
                         db.dataDao().insert(dataFormat);
                         runOnUiThread(() -> {
                             if (dataFormat.getValeursAberrantes()) {
@@ -273,6 +296,103 @@ public class ControleDroneActivity extends AppCompatActivity {
             } catch (MqttException e) {
                 Log.e("MQTT", "Failed to disconnect MQTT: " + e.getMessage());
             }
+        }
+    }
+
+    // FONCTION POUR LE MICRO
+    private void startRecording() {
+        // Vérifie la permission micro au runtime (Android 6+)
+        if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, 1);
+            return;
+        }
+
+        audioFilePath = getCacheDir().getAbsolutePath() + "/audio_"
+                + System.currentTimeMillis() + ".3gp";
+
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mediaRecorder.setOutputFile(audioFilePath);
+
+        try {
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+            isRecording = true;
+            Toast.makeText(this, "Enregistrement en cours...", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Log.e("AUDIO", "Erreur prepare/start : " + e.getMessage());
+        }
+    }
+
+    private void stopRecordingAndSend() {
+        if (mediaRecorder != null) {
+            mediaRecorder.stop();
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
+        isRecording = false;
+        Toast.makeText(this, "Enregistrement terminé, envoi...", Toast.LENGTH_SHORT).show();
+
+        // Envoi dans un thread séparé (jamais sur le UI thread)
+        new Thread(() -> sendAudioFile(audioFilePath)).start();
+    }
+
+    private void sendAudioFile(String filePath) {
+        String serverUrl = "http://10.218.228.169:8080/upload"; // ← adapte l'IP et le port
+
+        File audioFile = new File(filePath);
+        if (!audioFile.exists()) {
+            Log.e("AUDIO", "Fichier introuvable : " + filePath);
+            return;
+        }
+
+        try {
+            String boundary = "---boundary_feldspath";
+            HttpURLConnection conn = (HttpURLConnection) new URL(serverUrl).openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+            try (OutputStream os = conn.getOutputStream();
+                 FileInputStream fis = new FileInputStream(audioFile)) {
+
+                // En-tête multipart
+                String header = "--" + boundary + "\r\n"
+                        + "Content-Disposition: form-data; name=\"file\"; filename=\""
+                        + audioFile.getName() + "\"\r\n"
+                        + "Content-Type: audio/3gpp\r\n\r\n";
+                os.write(header.getBytes());
+
+                // Contenu du fichier
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+
+                // Fin multipart
+                os.write(("\r\n--" + boundary + "--\r\n").getBytes());
+                os.flush();
+            }
+
+            int responseCode = conn.getResponseCode();
+            Log.d("AUDIO", "Réponse serveur : " + responseCode);
+
+            runOnUiThread(() -> {
+                if (responseCode == 200) {
+                    Toast.makeText(this, "Audio envoyé ✓", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Erreur envoi : " + responseCode, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } catch (IOException e) {
+            Log.e("AUDIO", "Erreur envoi : " + e.getMessage());
+            runOnUiThread(() ->
+                    Toast.makeText(this, "Envoi échoué", Toast.LENGTH_SHORT).show());
         }
     }
 }

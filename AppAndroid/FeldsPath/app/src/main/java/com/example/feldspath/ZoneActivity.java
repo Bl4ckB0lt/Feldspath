@@ -34,6 +34,7 @@ public class ZoneActivity extends AppCompatActivity {
 
     //--------- VAR DE CODE --------
     private ArrayAdapter<String> spinnerAdapter;
+    private List<Zone> zoneList = new ArrayList<>(); // pour avoir une liste de zone
     private List<String> zoneNames = new ArrayList<>();
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor(); // pour faire le DAO
@@ -66,23 +67,29 @@ public class ZoneActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<Zone> zones) {
                 zoneNames.clear();
+                zoneList.clear();
                 for (Zone z : zones) {
                     zoneNames.add(z.libelle_zone);
+                    zoneList.add(z);
                 }
                 spinnerAdapter.notifyDataSetChanged();
 
-                // Repositionne le spinner sur la zone actuellement sélectionnée
-                int index = zoneNames.indexOf(MainActivity.idzoneActuelle);
-                if (index >= 0) {
-                    sp_ZoneActuelle.setSelection(index);
+                // Repositionnement sur la zone déjà sélectionnée
+                for (int i = 0; i < zoneList.size(); i++) {
+                    if (zoneList.get(i).getId_zone() == MainActivity.idzoneActuelle) {
+                        sp_ZoneActuelle.setSelection(i);
+                        break;
+                    }
                 }
             }
         });
         sp_ZoneActuelle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                MainActivity.idzoneActuelle = zoneNames.indexOf(MainActivity.idzoneActuelle);
-                Toast.makeText(ZoneActivity.this, "Zone sélectionnée : " + MainActivity.idzoneActuelle, Toast.LENGTH_SHORT).show();
+                if (!zoneList.isEmpty()) {
+                    MainActivity.idzoneActuelle = zoneList.get(position).getId_zone();
+                    Toast.makeText(ZoneActivity.this, "Zone : " + zoneList.get(position).libelle_zone, Toast.LENGTH_SHORT).show();
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {

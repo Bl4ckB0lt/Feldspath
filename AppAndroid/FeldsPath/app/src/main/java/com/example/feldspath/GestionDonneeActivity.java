@@ -90,7 +90,7 @@ public class GestionDonneeActivity extends AppCompatActivity {
             }
         });
 
-        //---- recyler View
+        //---- recyler View ----
         rv_data.setLayoutManager(new LinearLayoutManager(this));
         rv_data.setAdapter(adapter);
 //----------GESTION DU CALENDAR VIEW-------

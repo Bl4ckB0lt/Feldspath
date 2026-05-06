@@ -58,7 +58,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     private boolean isRecording = false;
 
     private MqttClient mqttClient;
-    private static final String BROKER_URL = "tcp://10.218.228.169:1883"; // rappel ancien brocker : broker.emqx.io      nouveau : 192.168.64.2
+    private static final String BROKER_URL = "tcp://10.218.228.169:1883";
     // ssl ws wss tcp
     private static final String CLIENT_ID = "AndroidDroneController";
 

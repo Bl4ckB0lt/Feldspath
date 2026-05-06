@@ -302,13 +302,13 @@ public class ControleDroneActivity extends AppCompatActivity {
     // ------------FONCTION POUR LE MICRO----------------
     //--------------------------------------------------
     private void startRecording() {
-        // Vérifie la permission micro au runtime (Android 6+)
+        // Vérifie la permission micro au runtime
         if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
                 != android.content.pm.PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, 1);
             return;
         }
-
+        // outputfile du fichier audio créée
         audioFilePath = getCacheDir().getAbsolutePath() + "/audio_"
                 + System.currentTimeMillis() + ".3gp";
 

@@ -298,8 +298,9 @@ public class ControleDroneActivity extends AppCompatActivity {
             }
         }
     }
-
-    // FONCTION POUR LE MICRO
+    //--------------------------------------------
+    // ------------FONCTION POUR LE MICRO----------------
+    //--------------------------------------------------
     private void startRecording() {
         // Vérifie la permission micro au runtime (Android 6+)
         if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)

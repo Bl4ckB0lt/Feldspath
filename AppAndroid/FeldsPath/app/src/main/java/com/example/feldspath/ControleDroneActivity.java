@@ -58,9 +58,10 @@ public class ControleDroneActivity extends AppCompatActivity {
     private boolean isRecording = false;
 
     private MqttClient mqttClient;
-    private static final String BROKER_URL = "tcp://10.218.228.169:1883";
+    private static final String BROKER_URL = "tcp://10.227.8.1:1883";
     // ssl ws wss tcp
     private static final String CLIENT_ID = "AndroidDroneController";
+    private static final String serverUrl = "http://10.218.228.169:8080/upload"; // ← adapte l'IP et le port
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +109,6 @@ public class ControleDroneActivity extends AppCompatActivity {
                 }
             }
         });
-
         Btn_prendreDonnee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +125,7 @@ public class ControleDroneActivity extends AppCompatActivity {
                 db.dataDao().insert(dataFormat);
             }
         });
+
         BTNAvancer.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -342,7 +343,6 @@ public class ControleDroneActivity extends AppCompatActivity {
     }
 
     private void sendAudioFile(String filePath) {
-        String serverUrl = "http://10.218.228.169:8080/upload"; // ← adapte l'IP et le port
 
         File audioFile = new File(filePath);
         if (!audioFile.exists()) {

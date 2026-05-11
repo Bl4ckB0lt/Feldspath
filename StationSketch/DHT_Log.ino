@@ -8,7 +8,7 @@ char pass[] = SECRET_PASS;
 int status  = WL_IDLE_STATUS;
 
 // === Configuration MQTT ===
-const char* mqttServer = "10.218.228.169";
+const char* mqttServer = "10.31.136.169";
 const int   mqttPort   = 1883;
 const char* mqttUser   = "";
 const char* mqttPass   = "";
@@ -18,14 +18,14 @@ WiFiClient   wifiClient;
 PubSubClient mqtt(wifiClient);
 
 void setup() {
+  carrier.noCase();
   Serial.begin(9600);
-  while (!Serial);
-
   carrier.begin();
 
   Serial.print("Connexion au Wi-Fi : ");
   Serial.println(ssid);
   while (status != WL_CONNECTED) {
+    Serial.println("Wi-Fi tentative de connexion !");
     status = WiFi.begin(ssid, pass);
     delay(10000);
   }

@@ -322,8 +322,8 @@ public class ControleDroneActivity extends AppCompatActivity {
 
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mediaRecorder.setOutputFile(audioFilePath);
 
         try {
@@ -344,7 +344,7 @@ public class ControleDroneActivity extends AppCompatActivity {
         }
         isRecording = false;
         Toast.makeText(this, "Enregistrement terminé, conversion...", Toast.LENGTH_SHORT).show();
-
+        /*
         new Thread(() -> {
             try {
                 // 1. Convertir le 3GPP/AMR en WAV
@@ -359,6 +359,10 @@ public class ControleDroneActivity extends AppCompatActivity {
                 runOnUiThread(() ->
                         Toast.makeText(this, "Erreur conversion", Toast.LENGTH_SHORT).show());
             }
+        }).start();
+         */
+        new Thread(()->{
+            sendAudioFile(audioFilePath);
         }).start();
     }
 

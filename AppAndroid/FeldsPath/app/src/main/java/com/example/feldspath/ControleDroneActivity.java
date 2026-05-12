@@ -1,5 +1,7 @@
 package com.example.feldspath;
 
+import static com.example.feldspath.MainActivity.idzoneActuelle;
+
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.util.Log;
@@ -58,7 +60,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     private boolean isRecording = false;
 
     private MqttClient mqttClient;
-    private static final String BROKER_URL = "tcp://10.227.8.1:1883";
+    private static final String BROKER_URL = "tcp://10.31.136.169:1883";
     // ssl ws wss tcp
     private static final String CLIENT_ID = "AndroidDroneController";
     private static final String serverUrl = "http://10.218.228.169:8080/upload"; // ← adapte l'IP et le port
@@ -117,11 +119,14 @@ public class ControleDroneActivity extends AppCompatActivity {
                 String TVCO2VAL = TVCo2.getText().toString();
                 String TVHumVAL = TVHum.getText().toString();
                 String TVTempVAL = TVTemp.getText().toString();
+                var abberant = false;
                 if (TVHum.getCurrentTextColor() == 0xFFFF0000) {
-                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), true, 1);
-                } else {
-                    dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), false, 1);
+                    abberant = true;
                 }
+                Log.d("btnReg", TVCO2VAL+" : "+Float.parseFloat(TVCO2VAL));
+                Log.d("btnReg", TVHumVAL+" : "+Float.parseFloat(TVHumVAL));
+                Log.d("btnReg", TVTempVAL+" : "+Float.parseFloat(TVTempVAL));
+                dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), abberant, MainActivity.idzoneActuelle);
                 db.dataDao().insert(dataFormat);
             }
         });

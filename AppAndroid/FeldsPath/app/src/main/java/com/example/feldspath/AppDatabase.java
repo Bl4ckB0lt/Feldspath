@@ -48,7 +48,8 @@ public abstract class AppDatabase extends RoomDatabase {
             super.onCreate(db);
             Log.d("", "Création du jeu d'essai");
             INSTANCE.databaseWriteExecutor.execute(() -> {
-                INSTANCE.zoneDAO().insert(new Zone( "zone"));
+                INSTANCE.zoneDAO().insert(new Zone( "cuisine"));
+                INSTANCE.zoneDAO().insert(new Zone( "salon"));
             });
 
         }

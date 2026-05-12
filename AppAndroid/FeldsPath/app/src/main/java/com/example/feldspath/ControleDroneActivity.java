@@ -60,10 +60,10 @@ public class ControleDroneActivity extends AppCompatActivity {
     private boolean isRecording = false;
 
     private MqttClient mqttClient;
-    private static final String BROKER_URL = "tcp://10.31.136.169:1883";
+    private static final String BROKER_URL = "tcp://10.177.12.169:1883";
     // ssl ws wss tcp
     private static final String CLIENT_ID = "AndroidDroneController";
-    private static final String serverUrl = "http://10.218.228.169:8080/upload"; // ← adapte l'IP et le port
+    private static final String serverUrl = "http://10.177.12.66:8080"; // ← adapte l'IP et le port
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

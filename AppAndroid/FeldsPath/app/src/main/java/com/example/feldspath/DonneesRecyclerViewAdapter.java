@@ -53,7 +53,6 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
         Log.d("tag",zonesMap.get(uneData.getId_zone()));
        // Lecture depuis le Map local, pas de requête DB car ROOM aime pas
         String nomZone = zonesMap.get(uneData.getId_zone());
-        Log.d("tag","testavant");
         if (nomZone == null) nomZone = "Zone inconnue";
 
         if (uneData.getValeursAberrantes()) {

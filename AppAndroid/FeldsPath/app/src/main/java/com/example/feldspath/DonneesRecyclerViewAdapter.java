@@ -1,5 +1,6 @@
 package com.example.feldspath;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,9 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
                 "dd/MM/yyyy HH:mm:ss", java.util.Locale.getDefault()
         );
         String dateFormatee = sdf.format(new java.util.Date(uneData.getDate()));
+        Log.d("tag","testavant");
         String nomZone = db.zoneDAO().getNomZoneById(uneData.getId_zone());
+        Log.d("tag","testavant");
         if (nomZone == null) nomZone = "Zone inconnue";
 
         if (uneData.getValeursAberrantes()) {

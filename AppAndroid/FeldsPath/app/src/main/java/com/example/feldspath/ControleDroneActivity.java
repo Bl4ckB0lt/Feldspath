@@ -493,30 +493,20 @@ public class ControleDroneActivity extends AppCompatActivity {
         }
 
         try {
-            String boundary = "boundary_feldspath";
             HttpURLConnection conn = (HttpURLConnection) new URL(serverUrl).openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type",
-                    "multipart/form-data; boundary=" + boundary);
+            conn.setRequestProperty("Content-Type", "audio/wav");
+            conn.setRequestProperty("Content-Length", String.valueOf(audioFile.length()));
+            Log.d("AUDIO", "Taille WAV : " + audioFile.length() + " bytes");
 
             try (OutputStream os = conn.getOutputStream();
                  FileInputStream fis = new FileInputStream(audioFile)) {
-                Log.d("MQTT", ""+audioFile.length());
-
-                String header = "--" + boundary + "\r\n"
-                        + "Content-Disposition: form-data; name=\"file\"; filename=\""
-                        + audioFile.getName() + "\"\r\n"
-                        + "Content-Type: audio/wav\r\n\r\n"; // ← WAV maintenant
-                os.write(header.getBytes());
-
                 byte[] buffer = new byte[4096];
                 int bytesRead;
                 while ((bytesRead = fis.read(buffer)) != -1) {
                     os.write(buffer, 0, bytesRead);
                 }
-
-                os.write(("\r\n--" + boundary + "--\r\n").getBytes());
                 os.flush();
             }
 

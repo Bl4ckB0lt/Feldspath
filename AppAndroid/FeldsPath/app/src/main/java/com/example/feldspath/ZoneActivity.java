@@ -69,7 +69,7 @@ public class ZoneActivity extends AppCompatActivity {
                 zoneNames.clear();
                 zoneList.clear();
                 for (Zone z : zones) {
-                    zoneNames.add(z.libelle_zone);
+                    zoneNames.add(z.getLibelle_zone());
                     zoneList.add(z);
                 }
                 spinnerAdapter.notifyDataSetChanged();

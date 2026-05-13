@@ -11,12 +11,12 @@ import java.util.List;
 @Dao
 public interface ZoneDAO {
 
-    @Query("SELECT * FROM Zone")
+    @Query("SELECT * FROM zone")
     LiveData<List<Zone>> getAll();
 
-    @Query("SELECT * FROM Zone WHERE id_zone = :uneId")
+    @Query("SELECT * FROM zone WHERE id_zone = :uneId")
     LiveData<Zone> getZoneById(long uneId);
-    @Query("SELECT libelle_zone FROM Zone WHERE id_zone = :uneId")
+    @Query("SELECT libelle_zone FROM zone WHERE id_zone = :uneId")
     String getNomZoneById(long uneId);
     @Insert
     void insert(Zone zone);

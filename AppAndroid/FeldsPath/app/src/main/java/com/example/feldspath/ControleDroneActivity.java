@@ -96,12 +96,6 @@ public class ControleDroneActivity extends AppCompatActivity {
         ChipLamp = findViewById(R.id.chip);
         // Initialize MQTT Client
         new Thread(this::initializeMQTT).start();
-        Log.d("DBZ", ""+ idzoneActuelle);
-        var test = db.zoneDAO().getAll();
-        Log.d("DBZ", "test");
-        var test2 = db.zoneDAO().getNomZoneById(MainActivity.idzoneActuelle);
-        Log.d("DBZ", "onCreate: ");
-        Log.d("DBZ", db.zoneDAO().getNomZoneById(MainActivity.idzoneActuelle));
         TVZone.setText("zone: "+ db.zoneDAO().getNomZoneById(MainActivity.idzoneActuelle));
         btnRetour.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,14 +128,14 @@ public class ControleDroneActivity extends AppCompatActivity {
                 String TVCO2VAL = TVCo2.getText().toString();
                 String TVHumVAL = TVHum.getText().toString();
                 String TVTempVAL = TVTemp.getText().toString();
-                var abberant = false;
+                boolean aberant = false;
                 if (TVHum.getCurrentTextColor() == 0xFFFF0000) {
-                    abberant = true;
+                    aberant = true;
                 }
                 Log.d("btnReg", TVCO2VAL+" : "+Float.parseFloat(TVCO2VAL));
                 Log.d("btnReg", TVHumVAL+" : "+Float.parseFloat(TVHumVAL));
                 Log.d("btnReg", TVTempVAL+" : "+Float.parseFloat(TVTempVAL));
-                dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), abberant, MainActivity.idzoneActuelle);
+                dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), aberant, MainActivity.idzoneActuelle);
                 db.dataDao().insert(dataFormat);
             }
         });
@@ -265,11 +259,12 @@ public class ControleDroneActivity extends AppCompatActivity {
                                 || dataF[1] >= MainActivity.humiditySeuil
                                 || dataF[3] >= MainActivity.gazSeuil;
 
-                        DonneesCapteur dataFormat = new DonneesCapteur(
-                                dataF[3], dataF[1], dataF[0], aberrant, idzoneActuelle);
-                        db.dataDao().insert(dataFormat);
-
-                        // ✅ UI uniquement ici
+                        if (aberrant) {
+                            DonneesCapteur dataFormat = new DonneesCapteur(
+                                    dataF[3], dataF[1], dataF[0], aberrant, MainActivity.idzoneActuelle);
+                            db.dataDao().insert(dataFormat);
+                        }
+                        //  UI uniquement ici
                         runOnUiThread(() -> {
                             int color = aberrant ? 0xFFFF0000 : 0xFF00FF00;
                             TVCo2.setTextColor(color);

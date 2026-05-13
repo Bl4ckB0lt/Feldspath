@@ -45,6 +45,9 @@ public class GestionDonneeActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        db.zoneDAO().getAll().observe(this, zones -> {
+            adapter.setZonesMap(zones); // alimente le Map du RVAdapter
+        });
         sp_trie = findViewById(R.id.sp_trie);
         cv_trieParDate = findViewById(R.id.CV_trieParDate);
         rv_data = findViewById(R.id.rv_affichageData);

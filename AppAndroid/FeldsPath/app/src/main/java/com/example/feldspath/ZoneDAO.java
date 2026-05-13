@@ -16,7 +16,8 @@ public interface ZoneDAO {
 
     @Query("SELECT * FROM Zone WHERE id_zone = :uneId")
     LiveData<Zone> getZoneById(long uneId);
-
+    @Query("SELECT libelle_zone FROM Zone WHERE id_zone = :uneId")
+    String getNomZoneById(long uneId);
     @Insert
     void insert(Zone zone);
 

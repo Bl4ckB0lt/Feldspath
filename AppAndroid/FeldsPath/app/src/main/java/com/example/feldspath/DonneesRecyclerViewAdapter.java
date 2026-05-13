@@ -3,6 +3,7 @@ package com.example.feldspath;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,14 +12,16 @@ import java.util.ArrayList;
 
 public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesViewHolder> {
     public ArrayList<DonneesCapteur> lstData;
+    private AppDatabase db;
 
     public void setLstData(ArrayList<DonneesCapteur> lstData) {
         this.lstData = lstData;
         notifyDataSetChanged();
     }
 
-    public DonneesRecyclerViewAdapter() {
+    public DonneesRecyclerViewAdapter(Context context) {
         lstData = new ArrayList<>();
+        db = AppDatabase.getDatabase(context); // db initialisé correctement
     }
 
     @NonNull
@@ -37,6 +40,8 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
                 "dd/MM/yyyy HH:mm:ss", java.util.Locale.getDefault()
         );
         String dateFormatee = sdf.format(new java.util.Date(uneData.getDate()));
+        String nomZone = db.zoneDAO().getNomZoneById(uneData.getId_zone());
+        if (nomZone == null) nomZone = "Zone inconnue";
 
         if (uneData.getValeursAberrantes()) {
             holder.tv_date.setText(dateFormatee + "");
@@ -47,7 +52,7 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
             holder.tv_humidite.setTextColor(0xFFFF0000);
             holder.tv_temperature.setText(String.format(uneData.getTemperature() + ""));
             holder.tv_temperature.setTextColor(0xFFFF0000);
-            holder.tv_zone.setText(String.format(uneData.getTemperature() + ""));
+            holder.tv_zone.setText(String.format(nomZone));
             holder.tv_zone.setTextColor(0xFFFF0000);
         }
         else{
@@ -59,7 +64,7 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
             holder.tv_humidite.setTextColor(0xFF00FF00);
             holder.tv_temperature.setText(String.format(uneData.getTemperature() + ""));
             holder.tv_temperature.setTextColor(0xFF00FF00);
-            holder.tv_zone.setText(String.format(uneData.getTemperature() + ""));
+            holder.tv_zone.setText(String.format(nomZone));
             holder.tv_zone.setTextColor(0xFF00FF00);
         }
     }

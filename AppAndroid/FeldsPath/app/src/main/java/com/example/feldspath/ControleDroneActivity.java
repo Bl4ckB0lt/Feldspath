@@ -317,8 +317,7 @@ public class ControleDroneActivity extends AppCompatActivity {
             return;
         }
         // outputfile du fichier audio créée
-        audioFilePath = getCacheDir().getAbsolutePath() + "/audio_"
-                + System.currentTimeMillis() + ".3gpp";
+        audioFilePath = getCacheDir().getAbsolutePath() + "/audio_enregistrement.3gpp";
 
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -382,7 +381,7 @@ public class ControleDroneActivity extends AppCompatActivity {
 
         extractor.selectTrack(audioTrack);
 
-        int sampleRate    = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);   // 8000 Hz pour AMR_NB
+        int sampleRate    = 16000; //format.getInteger(MediaFormat.KEY_SAMPLE_RATE);   // 8000 Hz pour AMR_NB
         int channelCount  = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT); // 1 (mono)
         String mime       = format.getString(MediaFormat.KEY_MIME);
 
@@ -503,6 +502,7 @@ public class ControleDroneActivity extends AppCompatActivity {
 
             try (OutputStream os = conn.getOutputStream();
                  FileInputStream fis = new FileInputStream(audioFile)) {
+                Log.d("MQTT", ""+audioFile.length());
 
                 String header = "--" + boundary + "\r\n"
                         + "Content-Disposition: form-data; name=\"file\"; filename=\""

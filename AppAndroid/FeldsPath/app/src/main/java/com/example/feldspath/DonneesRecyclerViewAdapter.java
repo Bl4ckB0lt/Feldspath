@@ -38,11 +38,30 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
         );
         String dateFormatee = sdf.format(new java.util.Date(uneData.getDate()));
 
-        holder.tv_date.setText(dateFormatee + "");
-        holder.tv_gaz.setText(String.format(uneData.getGaz() + ""));
-        holder.tv_humidite.setText(String.format(uneData.getHumidite() + ""));
-        holder.tv_temperature.setText(String.format(uneData.getTemperature() + ""));
-
+        if (uneData.getValeursAberrantes()) {
+            holder.tv_date.setText(dateFormatee + "");
+            holder.tv_date.setTextColor(0xFFFF0000);
+            holder.tv_gaz.setText(String.format(uneData.getGaz() + ""));
+            holder.tv_gaz.setTextColor(0xFFFF0000);
+            holder.tv_humidite.setText(String.format(uneData.getHumidite() + ""));
+            holder.tv_humidite.setTextColor(0xFFFF0000);
+            holder.tv_temperature.setText(String.format(uneData.getTemperature() + ""));
+            holder.tv_temperature.setTextColor(0xFFFF0000);
+            holder.tv_zone.setText(String.format(uneData.getTemperature() + ""));
+            holder.tv_zone.setTextColor(0xFFFF0000);
+        }
+        else{
+            holder.tv_date.setText(dateFormatee + "");
+            holder.tv_date.setTextColor(0xFF00FF00);
+            holder.tv_gaz.setText(String.format(uneData.getGaz() + ""));
+            holder.tv_gaz.setTextColor(0xFF00FF00);
+            holder.tv_humidite.setText(String.format(uneData.getHumidite() + ""));
+            holder.tv_humidite.setTextColor(0xFF00FF00);
+            holder.tv_temperature.setText(String.format(uneData.getTemperature() + ""));
+            holder.tv_temperature.setTextColor(0xFF00FF00);
+            holder.tv_zone.setText(String.format(uneData.getTemperature() + ""));
+            holder.tv_zone.setTextColor(0xFF00FF00);
+        }
     }
 
     @Override

@@ -11,6 +11,7 @@ public class DonneesViewHolder extends RecyclerView.ViewHolder {
     public TextView tv_gaz;
     public TextView tv_humidite;
     public TextView tv_temperature;
+    public TextView tv_zone;
 
 
     public DonneesViewHolder(@NonNull View itemView) {
@@ -19,5 +20,6 @@ public class DonneesViewHolder extends RecyclerView.ViewHolder {
         tv_gaz = itemView.findViewById(R.id.TVgaz);
         tv_humidite = itemView.findViewById(R.id.TVhumidite);
         tv_temperature = itemView.findViewById(R.id.TVtemperature);
+        tv_zone =itemView.findViewById(R.id.TVzone);
     }
 }

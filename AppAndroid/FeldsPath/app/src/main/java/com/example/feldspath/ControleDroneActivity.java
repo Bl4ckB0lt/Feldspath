@@ -43,8 +43,8 @@ public class ControleDroneActivity extends AppCompatActivity {
     ImageButton BTNReculer;
     ImageButton BTNTournerG;
     ImageButton BTNTournerD;
+    Button BTNMusique;
     ImageButton Btn_enregistrerAudio;
-
     ImageButton Btn_prendreDonnee;
 
     SeekBar SBVitesse;
@@ -53,6 +53,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     TextView TVTemp;
     TextView TVHum;
     TextView TVCo2;
+    TextView TVZone;
     private AppDatabase db;
     private Button btnRetour;
     // variables utiles hors xml
@@ -64,7 +65,7 @@ public class ControleDroneActivity extends AppCompatActivity {
     private static final String BROKER_URL = "tcp://10.177.12.169:1883";
     // ssl ws wss tcp
     private static final String CLIENT_ID = "AndroidDroneController";
-    private static final String serverUrl = "http://10.177.12.66:8080"; // ← adapte l'IP et le port
+    private static final String serverUrl = "http://10.177.12.139:8080"; // ← adapte l'IP et le port
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,19 +83,26 @@ public class ControleDroneActivity extends AppCompatActivity {
         BTNTournerG = findViewById(R.id.BTNTournerG);
         BTNTournerD = findViewById(R.id.BTNTournerD);
         Btn_prendreDonnee = findViewById(R.id.Btn_prendreDonnee);
-
+        BTNMusique = findViewById(R.id.btn_musique);
         Btn_enregistrerAudio = findViewById(R.id.btn_enregistrerAudio);
         SBVitesse = findViewById(R.id.seekBarVitesse);
         TVTemp = findViewById(R.id.TVTemp);
         TVHum = findViewById(R.id.TVHum);
         TVCo2 = findViewById(R.id.TVCo2);
+        TVZone = findViewById(R.id.TVZone);
 
         btnRetour = findViewById(R.id.btn_retourMenuDepuisControle);
 
         ChipLamp = findViewById(R.id.chip);
         // Initialize MQTT Client
         new Thread(this::initializeMQTT).start();
-
+        Log.d("DBZ", ""+ idzoneActuelle);
+        var test = db.zoneDAO().getAll();
+        Log.d("DBZ", "test");
+        var test2 = db.zoneDAO().getNomZoneById(MainActivity.idzoneActuelle);
+        Log.d("DBZ", "onCreate: ");
+        Log.d("DBZ", db.zoneDAO().getNomZoneById(MainActivity.idzoneActuelle));
+        TVZone.setText("zone: "+ db.zoneDAO().getNomZoneById(MainActivity.idzoneActuelle));
         btnRetour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,6 +118,12 @@ public class ControleDroneActivity extends AppCompatActivity {
                 } else {
                     stopRecordingAndSend();
                 }
+            }
+        });
+        BTNMusique.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                publishMessage("Feldspath/musique", "message_vide");
             }
         });
         Btn_prendreDonnee.setOnClickListener(new View.OnClickListener() {
@@ -141,6 +155,7 @@ public class ControleDroneActivity extends AppCompatActivity {
                     publishMessage("Feldspath/controle", "arreter");
                 }
                 return false;
+                //publishMessage("Feldspath/musique", "avancer");
             }
         });
         BTNReculer.setOnTouchListener(new View.OnTouchListener() {

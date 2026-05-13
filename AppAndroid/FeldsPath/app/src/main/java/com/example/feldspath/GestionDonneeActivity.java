@@ -23,6 +23,7 @@ public class GestionDonneeActivity extends AppCompatActivity {
     private CalendarView cv_trieParDate;
     private RecyclerView rv_data;
     private Button btnRetour2;
+    private Spinner sp_triePARZONE;
 // ------VARIABLES GLOBALES----
 
     // null = pas de filtre, true = aberrantes seulement, false = normales seulement
@@ -32,6 +33,8 @@ public class GestionDonneeActivity extends AppCompatActivity {
     private DonneesRecyclerViewAdapter adapter ;
     // -1 = pas de filtre date
     private long idDateFiltre = -1;
+    // -1 = toutes les zones
+    private long idZoneFiltre = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,7 @@ public class GestionDonneeActivity extends AppCompatActivity {
         db.zoneDAO().getAll().observe(this, zones -> {
             adapter.setZonesMap(zones); // alimente le Map du RVAdapter
         });
+        sp_triePARZONE = findViewById(R.id.sp_triePARZONE);
         sp_trie = findViewById(R.id.sp_trie);
         cv_trieParDate = findViewById(R.id.CV_trieParDate);
         rv_data = findViewById(R.id.rv_affichageData);
@@ -93,6 +97,49 @@ public class GestionDonneeActivity extends AppCompatActivity {
             }
         });
 
+        db.zoneDAO().getAll().observe(this, zones -> {
+            ArrayList<String> nomsZones = new ArrayList<>();
+            // Première valeur = pas de filtre
+            nomsZones.add("Toutes les zones");
+            // Ajout des zones de la base
+            for (Zone z : zones) {
+                nomsZones.add(z.getLibelle_zone());
+            }
+            ArrayAdapter<String> spinnerAdapterZONE = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_spinner_item,
+                    nomsZones
+            );
+            spinnerAdapterZONE.setDropDownViewResource(
+                    android.R.layout.simple_spinner_dropdown_item
+            );
+            sp_triePARZONE.setAdapter(spinnerAdapterZONE);
+            // Gestion du choix
+            sp_triePARZONE.setOnItemSelectedListener(
+                    new android.widget.AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(android.widget.AdapterView<?> parent,
+                                                   View view,
+                                                   int position,
+                                                   long id) {
+                            if (position == 0) {
+                                // Toutes les zones
+                                idZoneFiltre = -1;
+                            } else {
+                                // position -1 car "Toutes les zones" est en premier
+                                idZoneFiltre = zones.get(position - 1).getId_zone();
+                            }
+                            filtrerDataAAfficher();
+                        }
+                        @Override
+                        public void onNothingSelected(android.widget.AdapterView<?> parent) {
+                            idZoneFiltre = -1;
+                            filtrerDataAAfficher();
+                        }
+                    }
+            );
+        });
+
         //---- recyler View ----
         rv_data.setLayoutManager(new LinearLayoutManager(this));
         rv_data.setAdapter(adapter);
@@ -132,6 +179,7 @@ public class GestionDonneeActivity extends AppCompatActivity {
                 if (data.getDate() < debutJour || data.getDate() > finJour) continue;
             }
             if (filtreAberrantes != null && filtreAberrantes != data.getValeursAberrantes()) continue;
+            if (idZoneFiltre != -1 && data.getId_zone() != idZoneFiltre) continue;
             dataFiltrees.add(data);
         }
         adapter.setLstData(dataFiltrees);

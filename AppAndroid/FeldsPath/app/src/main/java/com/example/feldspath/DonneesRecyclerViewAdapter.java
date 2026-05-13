@@ -50,7 +50,6 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
                 "dd/MM/yyyy HH:mm:ss", java.util.Locale.getDefault()
         );
         String dateFormatee = sdf.format(new java.util.Date(uneData.getDate()));
-        Log.d("tag",zonesMap.get(uneData.getId_zone()));
        // Lecture depuis le Map local, pas de requête DB car ROOM aime pas
         String nomZone = zonesMap.get(uneData.getId_zone());
         if (nomZone == null) nomZone = "Zone inconnue";

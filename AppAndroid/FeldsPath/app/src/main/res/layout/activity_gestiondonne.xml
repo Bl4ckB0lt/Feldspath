@@ -16,10 +16,21 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <Spinner
-            android:id="@+id/sp_trie"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/sp_triePARZONE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Spinner
+                android:id="@+id/sp_trie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <CalendarView
             android:id="@+id/CV_trieParDate"

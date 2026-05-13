@@ -5,16 +5,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.content.Context;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesViewHolder> {
     public ArrayList<DonneesCapteur> lstData;
-    private AppDatabase db;
-
+    private Map<Long, String> zonesMap = new HashMap<>();
+    public void setZonesMap(List<Zone> zones) {
+        zonesMap.clear();
+        for (Zone z : zones) {
+            zonesMap.put(z.getId_zone(), z.getLibelle_zone());
+        }
+        notifyDataSetChanged();
+    }
     public void setLstData(ArrayList<DonneesCapteur> lstData) {
         this.lstData = lstData;
         notifyDataSetChanged();
@@ -22,7 +32,6 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
 
     public DonneesRecyclerViewAdapter(Context context) {
         lstData = new ArrayList<>();
-        db = AppDatabase.getDatabase(context); // db initialisé correctement
     }
 
     @NonNull
@@ -42,7 +51,8 @@ public class DonneesRecyclerViewAdapter extends RecyclerView.Adapter<DonneesView
         );
         String dateFormatee = sdf.format(new java.util.Date(uneData.getDate()));
         Log.d("tag","testavant");
-        String nomZone = db.zoneDAO().getNomZoneById(uneData.getId_zone());
+       // Lecture depuis le Map local, pas de requête DB car ROOM aime pas
+        String nomZone = zonesMap.get(uneData.getId_zone());
         Log.d("tag","testavant");
         if (nomZone == null) nomZone = "Zone inconnue";
 

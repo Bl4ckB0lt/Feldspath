@@ -29,7 +29,7 @@ public class GestionDonneeActivity extends AppCompatActivity {
     private Boolean filtreAberrantes = null;
     private AppDatabase db;
     private ArrayList<DonneesCapteur> lstToutesLesDonnees;
-    private DonneesRecyclerViewAdapter adapter = new DonneesRecyclerViewAdapter();
+    private DonneesRecyclerViewAdapter adapter ;
     // -1 = pas de filtre date
     private long idDateFiltre = -1;
 
@@ -37,7 +37,7 @@ public class GestionDonneeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = AppDatabase.getDatabase(this);
-
+        adapter = new DonneesRecyclerViewAdapter(this);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_gestiondonne);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

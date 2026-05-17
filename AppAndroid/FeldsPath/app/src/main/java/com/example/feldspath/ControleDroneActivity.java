@@ -3,9 +3,6 @@ package com.example.feldspath;
 import static com.example.feldspath.MainActivity.idzoneActuelle;
 
 import android.media.MediaRecorder;
-import android.media.MediaCodec;
-import android.media.MediaExtractor;
-import android.media.MediaFormat;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -35,8 +32,6 @@ import android.widget.Toast;
 
 import java.io.*;
 import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 public class ControleDroneActivity extends AppCompatActivity {
     ImageButton BTNAvancer;
@@ -62,10 +57,10 @@ public class ControleDroneActivity extends AppCompatActivity {
     private boolean isRecording = false;
 
     private MqttClient mqttClient;
-    private static final String BROKER_URL = "tcp://10.177.12.169:1883";
+    private static final String BROKER_URL = "tcp://10.0.0.67:1883";
     // ssl ws wss tcp
     private static final String CLIENT_ID = "AndroidDroneController";
-    private static final String serverUrl = "http://10.177.12.139:8080"; // ← adapte l'IP et le port
+    private static final String serverUrl = "http://10.0.0.47:8080"; // ← adapte l'IP et le port
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +91,10 @@ public class ControleDroneActivity extends AppCompatActivity {
         ChipLamp = findViewById(R.id.chip);
         // Initialize MQTT Client
         new Thread(this::initializeMQTT).start();
-        TVZone.setText("zone: "+ db.zoneDAO().getNomZoneById(MainActivity.idzoneActuelle));
+        new Thread(() -> {
+            String nomZone = db.zoneDAO().getNomZoneById(MainActivity.idzoneActuelle);
+            runOnUiThread(() -> TVZone.setText("zone: " + nomZone));
+        }).start();
         btnRetour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,23 +118,35 @@ public class ControleDroneActivity extends AppCompatActivity {
                 publishMessage("Feldspath/musique", "message_vide");
             }
         });
-        Btn_prendreDonnee.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DonneesCapteur dataFormat;
+        Btn_prendreDonnee.setOnClickListener(v -> {
+            String co2Str  = TVCo2.getText().toString().trim();
+            String humStr  = TVHum.getText().toString().trim();
+            String tempStr = TVTemp.getText().toString().trim();
 
-                String TVCO2VAL = TVCo2.getText().toString();
-                String TVHumVAL = TVHum.getText().toString();
-                String TVTempVAL = TVTemp.getText().toString();
-                boolean aberant = false;
-                if (TVHum.getCurrentTextColor() == 0xFFFF0000) {
-                    aberant = true;
-                }
-                Log.d("btnReg", TVCO2VAL+" : "+Float.parseFloat(TVCO2VAL));
-                Log.d("btnReg", TVHumVAL+" : "+Float.parseFloat(TVHumVAL));
-                Log.d("btnReg", TVTempVAL+" : "+Float.parseFloat(TVTempVAL));
-                dataFormat = new DonneesCapteur(Float.parseFloat(TVCO2VAL), Float.parseFloat(TVHumVAL), Float.parseFloat(TVTempVAL), aberant, MainActivity.idzoneActuelle);
-                db.dataDao().insert(dataFormat);
+            if (co2Str.isEmpty() || humStr.isEmpty() || tempStr.isEmpty()) {
+                Toast.makeText(this, "Données pas encore reçues", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                float co2  = Float.parseFloat(co2Str);
+                float hum  = Float.parseFloat(humStr);
+                float temp = Float.parseFloat(tempStr);
+                boolean aberrant = TVHum.getCurrentTextColor() == 0xFFFF0000;
+
+                DonneesCapteur dataFormat = new DonneesCapteur(
+                        co2, hum, temp, aberrant, MainActivity.idzoneActuelle);
+
+                // ← insert dans un thread séparé
+                new Thread(() -> {
+                    db.dataDao().insert(dataFormat);
+                    runOnUiThread(() ->
+                            Toast.makeText(this, "Données enregistrées ✓", Toast.LENGTH_SHORT).show());
+                }).start();
+
+            } catch (NumberFormatException e) {
+                Log.e("btnReg", "Valeur non numérique : " + e.getMessage());
+                Toast.makeText(this, "Données invalides", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -149,7 +159,6 @@ public class ControleDroneActivity extends AppCompatActivity {
                     publishMessage("Feldspath/controle", "arreter");
                 }
                 return false;
-                //publishMessage("Feldspath/musique", "avancer");
             }
         });
         BTNReculer.setOnTouchListener(new View.OnTouchListener() {
@@ -319,20 +328,32 @@ public class ControleDroneActivity extends AppCompatActivity {
     //--------------------------------------------
     // ------------FONCTION POUR LE MICRO----------------
     //--------------------------------------------------
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1 && grantResults.length > 0
+                && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            startRecording();
+        } else {
+            Toast.makeText(this, "Permission micro refusée", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void startRecording() {
-        // Vérifie la permission micro au runtime
         if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
                 != android.content.pm.PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, 1);
             return;
         }
-        // outputfile du fichier audio créée
-        audioFilePath = getCacheDir().getAbsolutePath() + "/audio_enregistrement.3gpp";
+
+        audioFilePath = getCacheDir().getAbsolutePath() + "/audio_enregistrement.m4a";
 
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mediaRecorder.setAudioEncodingBitRate(128000);
+        mediaRecorder.setAudioSamplingRate(44100);
         mediaRecorder.setOutputFile(audioFilePath);
 
         try {
@@ -341,164 +362,35 @@ public class ControleDroneActivity extends AppCompatActivity {
             isRecording = true;
             Toast.makeText(this, "Enregistrement en cours...", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Log.e("AUDIO", "Erreur prepare/start : " + e.getMessage());
+            Log.e("AUDIOapp", "Erreur prepare/start : " + e.getMessage());
+            mediaRecorder.release();
+            mediaRecorder = null;
+            Toast.makeText(this, "Impossible de démarrer l'enregistrement", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void stopRecordingAndSend() {
         if (mediaRecorder != null) {
-            mediaRecorder.stop();
-            mediaRecorder.release();
-            mediaRecorder = null;
+            try {
+                mediaRecorder.stop();
+            } catch (RuntimeException e) {
+                Log.e("AUDIOapp", "Erreur stop : " + e.getMessage());
+            } finally {
+                mediaRecorder.release();
+                mediaRecorder = null;
+            }
         }
         isRecording = false;
-        Toast.makeText(this, "Enregistrement terminé, conversion...", Toast.LENGTH_SHORT).show();
-
-        new Thread(() -> {
-            try {
-                // 1. Convertir le 3GPP/AMR en WAV
-                String wavPath = getCacheDir().getAbsolutePath() + "/audio_converted.wav";
-                convertAmrToWav(audioFilePath, wavPath);
-
-                // 2. Envoyer le WAV
-                sendAudioFile(wavPath);
-
-            } catch (Exception e) {
-                Log.e("AUDIO", "Erreur conversion : " + e.getMessage());
-                runOnUiThread(() ->
-                        Toast.makeText(this, "Erreur conversion", Toast.LENGTH_SHORT).show());
-            }
-        }).start();
-    }
-
-    private void convertAmrToWav(String inputPath, String outputPath) throws Exception {
-
-        // --- 1. Extraire le flux AMR avec MediaExtractor ---
-        MediaExtractor extractor = new MediaExtractor();
-        extractor.setDataSource(inputPath);
-
-        MediaFormat format = null;
-        int audioTrack = -1;
-        for (int i = 0; i < extractor.getTrackCount(); i++) {
-            MediaFormat f = extractor.getTrackFormat(i);
-            if (f.getString(MediaFormat.KEY_MIME).startsWith("audio/")) {
-                audioTrack = i;
-                format = f;
-                break;
-            }
-        }
-        if (audioTrack == -1) throw new Exception("Aucune piste audio trouvée");
-
-        extractor.selectTrack(audioTrack);
-
-        int sampleRate    = 16000; //format.getInteger(MediaFormat.KEY_SAMPLE_RATE);   // 8000 Hz pour AMR_NB
-        int channelCount  = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT); // 1 (mono)
-        String mime       = format.getString(MediaFormat.KEY_MIME);
-
-        // --- 2. Décoder avec MediaCodec → PCM brut ---
-        MediaCodec codec = MediaCodec.createDecoderByType(mime);
-        codec.configure(format, null, null, 0);
-        codec.start();
-
-        ByteArrayOutputStream pcmStream = new ByteArrayOutputStream();
-        MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-        boolean endOfStream = false;
-
-        while (!endOfStream) {
-            // Alimenter l'encodeur
-            int inIndex = codec.dequeueInputBuffer(10000);
-            if (inIndex >= 0) {
-                ByteBuffer inputBuffer = codec.getInputBuffer(inIndex);
-                inputBuffer.clear();
-                int sampleSize = extractor.readSampleData(inputBuffer, 0);
-
-                if (sampleSize < 0) {
-                    codec.queueInputBuffer(inIndex, 0, 0, 0,
-                            MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-                    endOfStream = true;
-                } else {
-                    codec.queueInputBuffer(inIndex, 0, sampleSize,
-                            extractor.getSampleTime(), 0);
-                    extractor.advance();
-                }
-            }
-
-            // Récupérer les données PCM décodées
-            int outIndex = codec.dequeueOutputBuffer(bufferInfo, 10000);
-            if (outIndex >= 0) {
-                ByteBuffer outputBuffer = codec.getOutputBuffer(outIndex);
-                byte[] chunk = new byte[bufferInfo.size];
-                outputBuffer.get(chunk);
-                pcmStream.write(chunk);
-                codec.releaseOutputBuffer(outIndex, false);
-
-                if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                    endOfStream = true;
-                }
-            }
-        }
-
-        codec.stop();
-        codec.release();
-        extractor.release();
-
-        byte[] pcmData = pcmStream.toByteArray();
-
-        // --- 3. Écrire le fichier WAV avec header ---
-        writeWavFile(outputPath, pcmData, sampleRate, channelCount);
-
-        Log.d("AUDIO", "Conversion OK → " + outputPath
-                + " (" + pcmData.length + " bytes PCM)");
-    }
-
-    private void writeWavFile(String path, byte[] pcmData,
-                              int sampleRate, int channels) throws IOException {
-        int bitsPerSample = 16;
-        int byteRate      = sampleRate * channels * bitsPerSample / 8;
-        int blockAlign    = channels * bitsPerSample / 8;
-        int dataSize      = pcmData.length;
-        int chunkSize     = 36 + dataSize;
-
-        try (FileOutputStream fos = new FileOutputStream(path)) {
-            // RIFF header
-            fos.write("RIFF".getBytes());
-            fos.write(intToBytes(chunkSize));
-            fos.write("WAVE".getBytes());
-
-            // fmt chunk
-            fos.write("fmt ".getBytes());
-            fos.write(intToBytes(16));               // taille du chunk fmt
-            fos.write(shortToBytes((short) 1));      // PCM = 1
-            fos.write(shortToBytes((short) channels));
-            fos.write(intToBytes(sampleRate));
-            fos.write(intToBytes(byteRate));
-            fos.write(shortToBytes((short) blockAlign));
-            fos.write(shortToBytes((short) bitsPerSample));
-
-            // data chunk
-            fos.write("data".getBytes());
-            fos.write(intToBytes(dataSize));
-            fos.write(pcmData);
-        }
-    }
-
-
-    private byte[] intToBytes(int value) {
-        return ByteBuffer.allocate(4)
-                .order(ByteOrder.LITTLE_ENDIAN)
-                .putInt(value).array();
-    }
-
-    private byte[] shortToBytes(short value) {
-        return ByteBuffer.allocate(2)
-                .order(ByteOrder.LITTLE_ENDIAN)
-                .putShort(value).array();
+        Toast.makeText(this, "Enregistrement terminé, envoi...", Toast.LENGTH_SHORT).show();
+        new Thread(() -> sendAudioFile(audioFilePath)).start();
     }
 
     private void sendAudioFile(String filePath) {
         File audioFile = new File(filePath);
         if (!audioFile.exists()) {
-            Log.e("AUDIO", "Fichier introuvable : " + filePath);
+            Log.e("AUDIOapp", "Fichier introuvable : " + filePath);
+            runOnUiThread(() ->
+                    Toast.makeText(this, "Fichier audio introuvable", Toast.LENGTH_SHORT).show());
             return;
         }
 
@@ -506,9 +398,10 @@ public class ControleDroneActivity extends AppCompatActivity {
             HttpURLConnection conn = (HttpURLConnection) new URL(serverUrl).openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "audio/wav");
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(30000);
+            conn.setRequestProperty("Content-Type", "audio/mp4");
             conn.setRequestProperty("Content-Length", String.valueOf(audioFile.length()));
-            Log.d("AUDIO", "Taille WAV : " + audioFile.length() + " bytes");
 
             try (OutputStream os = conn.getOutputStream();
                  FileInputStream fis = new FileInputStream(audioFile)) {
@@ -521,8 +414,6 @@ public class ControleDroneActivity extends AppCompatActivity {
             }
 
             int responseCode = conn.getResponseCode();
-            Log.d("AUDIO", "Réponse serveur : " + responseCode);
-
             runOnUiThread(() -> {
                 if (responseCode == 200) {
                     Toast.makeText(this, "Audio envoyé ✓", Toast.LENGTH_SHORT).show();
@@ -532,7 +423,7 @@ public class ControleDroneActivity extends AppCompatActivity {
             });
 
         } catch (IOException e) {
-            Log.e("AUDIO", "Erreur envoi : " + e.getMessage());
+            Log.e("AUDIOapp", "Erreur envoi : " + e.getMessage());
             runOnUiThread(() ->
                     Toast.makeText(this, "Envoi échoué", Toast.LENGTH_SHORT).show());
         }
